@@ -97,6 +97,52 @@ function TicketList() {
         }
     };
 
+    const handleStatusChange = async (id, newStatus) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/tickets/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                setTickets(tickets.map(t => t.id === id ? { ...t, status: newStatus } : t));
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
+
+    const StatusSelector = ({ id, currentStatus }) => {
+        const statuses = ["Ouvert", "En Attente", "Fermé"];
+        const color = getStatusColor(currentStatus);
+
+        // Si le ticket est fermé, afficher un badge statique
+        if (currentStatus === "Fermé") {
+            return (
+                <div className="ticket-status-pill-static" style={{ borderColor: color, color: color }}>
+                    <FaCircle size={8} /> {currentStatus}
+                </div>
+            );
+        }
+
+        return (
+            <div className="ticket-status-selector" style={{ borderColor: color, color: color }}>
+                <FaCircle size={8} />
+                <select
+                    value={currentStatus}
+                    onChange={(e) => handleStatusChange(id, e.target.value)}
+                    className="status-select-ticket"
+                    style={{ color: color }}
+                >
+                    {statuses.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                    ))}
+                </select>
+            </div>
+        );
+    };
+
     return (
         <div className="ticket-list-container">
             <div className="ticket-list-header">
@@ -120,9 +166,7 @@ function TicketList() {
                             <div className="ticket-card-header">
                                 <div>
                                     <div className="ticket-header-top">
-                                        <div className="ticket-status-pill" style={{ borderColor: getStatusColor(ticket.status), color: getStatusColor(ticket.status) }}>
-                                            <FaCircle size={8} /> {ticket.status}
-                                        </div>
+                                        <StatusSelector id={ticket.id} currentStatus={ticket.status} />
                                         <div className="ticket-number-pill">#{ticket.ticket_number}</div>
                                     </div>
                                     <h3 title={ticket.subject}>{ticket.subject}</h3>
@@ -152,16 +196,18 @@ function TicketList() {
                                 <button className="details-btn-text" onClick={() => { setSelectedTicket(ticket); setShowModal(true); }}>
                                     <FaInfoCircle size={14} /> Détails
                                 </button>
-                                <div className="action-actions">
-                                    <button className="edit-btn-small" onClick={() => navigate("/add-ticket", { state: { ticket } })} title="Modifier">
-                                        <FaEdit size={16} />
-                                    </button>
-                                    {user.role === "ADMIN" && (
-                                        <button className="delete-btn-small" onClick={() => handleDelete(ticket.id)} title="Supprimer">
-                                            <FaTrashAlt size={16} />
+                                {ticket.status !== "Fermé" && (
+                                    <div className="action-actions">
+                                        <button className="edit-btn-small" onClick={() => navigate("/add-ticket", { state: { ticket } })} title="Modifier">
+                                            <FaEdit size={16} />
                                         </button>
-                                    )}
-                                </div>
+                                        {user.role === "ADMIN" && (
+                                            <button className="delete-btn-small" onClick={() => handleDelete(ticket.id)} title="Supprimer">
+                                                <FaTrashAlt size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))

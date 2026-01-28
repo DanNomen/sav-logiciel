@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaTools, FaShieldAlt, FaExclamationTriangle, FaCalendarAlt, FaUser, FaTrashAlt, FaEdit, FaFilter, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTools, FaShieldAlt, FaExclamationTriangle, FaCalendarAlt, FaUser, FaTrashAlt, FaEdit, FaFilter, FaTimes, FaInfoCircle } from "react-icons/fa";
 import "./InterventionList.css";
 
 function InterventionList() {
@@ -9,6 +9,8 @@ function InterventionList() {
     const [systems, setSystems] = useState({});
     const [tickets, setTickets] = useState({});
     const [searchParams, setSearchParams] = useSearchParams();
+    const [selectedIntervention, setSelectedIntervention] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     const clientIdFilter = searchParams.get("clientId");
@@ -92,6 +94,16 @@ function InterventionList() {
 
     const StatusSelector = ({ id, currentStatus }) => {
         const statuses = ["NOUVEAU", "EN COURS", "TERMINÉ", "EN ATTENTE", "ANNULÉ"];
+
+        // Si l'intervention est terminée, afficher un badge statique
+        if (currentStatus === "TERMINÉ") {
+            return (
+                <div className={`status-badge-static status-${currentStatus.replace(/\s+/g, '-').toLowerCase()}`}>
+                    {currentStatus}
+                </div>
+            );
+        }
+
         return (
             <div className={`status-badge-container status-${currentStatus.replace(/\s+/g, '-').toLowerCase()}`}>
                 <select
@@ -185,19 +197,121 @@ function InterventionList() {
                             </div>
 
                             <div className="card-footer">
-                                <div className="action-actions">
-                                    <button className="edit-btn-small" onClick={() => navigate("/add-intervention", { state: { intervention: item } })} title="Modifier">
-                                        <FaEdit size={16} />
-                                    </button>
-                                    <button className="delete-btn-small" onClick={() => handleDelete(item.id)} title="Supprimer">
-                                        <FaTrashAlt size={16} />
-                                    </button>
-                                </div>
+                                <button className="details-btn-text" onClick={() => { setSelectedIntervention(item); setIsModalOpen(true); }}>
+                                    <FaInfoCircle size={14} /> Détails
+                                </button>
+                                {item.status !== "TERMINÉ" && (
+                                    <div className="action-actions">
+                                        <button className="edit-btn-small" onClick={() => navigate("/add-intervention", { state: { intervention: item } })} title="Modifier">
+                                            <FaEdit size={16} />
+                                        </button>
+                                        <button className="delete-btn-small" onClick={() => handleDelete(item.id)} title="Supprimer">
+                                            <FaTrashAlt size={16} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))
                 )}
             </div>
+
+            {/* Modal de détails intervention */}
+            {isModalOpen && selectedIntervention && (
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Détails de l'Intervention</h2>
+                            <button className="close-btn" onClick={() => setIsModalOpen(false)}>
+                                <FaTimes size={24} />
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="detail-section">
+                                <h3><FaTools size={20} /> Informations Générales</h3>
+                                <div className="detail-grid">
+                                    <div className="detail-item">
+                                        <label>Type</label>
+                                        <p><span className={`type-badge ${selectedIntervention.type}`}>{selectedIntervention.type === 'preventive' ? 'Préventive' : 'Corrective'}</span></p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Statut</label>
+                                        <p><span className={`status-pill status-${selectedIntervention.status.replace(/\s+/g, '-').toLowerCase()}`}>{selectedIntervention.status}</span></p>
+                                    </div>
+                                    <div className="detail-item full-width">
+                                        <label>Titre</label>
+                                        <p>{selectedIntervention.title}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Client</label>
+                                        <p>{clients[selectedIntervention.client_id]?.nom || "Client inconnu"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Système</label>
+                                        <p>{systems[selectedIntervention.system_id]?.monitoring_name || "Inconnu"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Technicien</label>
+                                        <p>{selectedIntervention.technician || selectedIntervention.technicien || "Non spécifié"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Date</label>
+                                        <p>{selectedIntervention.date}</p>
+                                    </div>
+                                    {selectedIntervention.intervention_number && (
+                                        <div className="detail-item">
+                                            <label>Numéro</label>
+                                            <p>{selectedIntervention.intervention_number}</p>
+                                        </div>
+                                    )}
+                                    {selectedIntervention.ticket_id && tickets[selectedIntervention.ticket_id] && (
+                                        <div className="detail-item">
+                                            <label>Ticket lié</label>
+                                            <p>#{tickets[selectedIntervention.ticket_id].ticket_number}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {selectedIntervention.type === 'preventive' ? (
+                                <div className="detail-section">
+                                    <h3>Observations</h3>
+                                    <p className="detail-text">{selectedIntervention.observation || "Aucune observation."}</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="detail-section">
+                                        <h3>Contexte de la panne</h3>
+                                        <p className="detail-text">{selectedIntervention.context || "N/A"}</p>
+                                    </div>
+                                    <div className="detail-section">
+                                        <h3>Résolution</h3>
+                                        <p className="detail-text">{selectedIntervention.resolution || "N/A"}</p>
+                                    </div>
+                                    {selectedIntervention.material_changed && (
+                                        <div className="detail-section">
+                                            <h3>Matériel remplacé</h3>
+                                            <p className="detail-text">{selectedIntervention.material_changed}</p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className="modal-footer">
+                            {selectedIntervention.status !== "TERMINÉ" && (
+                                <button className="modal-edit-btn" onClick={() => { navigate("/add-intervention", { state: { intervention: selectedIntervention } }); setIsModalOpen(false); }}>
+                                    <FaEdit size={18} /> Modifier l'intervention
+                                </button>
+                            )}
+                            <button className="modal-close-btn" onClick={() => setIsModalOpen(false)}>
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

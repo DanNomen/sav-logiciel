@@ -156,9 +156,6 @@ function ClientList() {
                         <div key={client.id || client.nom} className="client-card animate-fadeIn">
                             <div className="card-badge">{client.categorie}</div>
                             <div className="card-header">
-                                <div className="client-avatar">
-                                    <FaUser size={24} />
-                                </div>
                                 <div className="client-basic-info">
                                     <h3>{client.nom}</h3>
                                     {client.client && <div className="client-subtitle">{client.client}</div>}

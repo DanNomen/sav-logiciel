@@ -380,5 +380,12 @@ def update_ticket(ticket_id: str, ticket: Ticket):
             return {"message": "Ticket updated", "ticket": updated_data}
     raise HTTPException(status_code=404, detail="Ticket not found")
 
+@app.patch("/api/tickets/{ticket_id}/status")
+def update_ticket_status(ticket_id: str, status_data: StatusUpdate):
+    for i, t in enumerate(TICKETS):
+        if t.get("id") == ticket_id:
+            TICKETS[i]["status"] = status_data.status
+            return {"message": "Status updated", "ticket": TICKETS[i]}
+    raise HTTPException(status_code=404, detail="Ticket not found")
 
 
