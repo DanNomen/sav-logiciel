@@ -296,6 +296,17 @@ def update_intervention(intervention_id: str, intervention: Intervention):
             return {"message": "Intervention updated", "intervention": updated_data}
     raise HTTPException(status_code=404, detail="Intervention not found")
 
+class StatusUpdate(BaseModel):
+    status: str
+
+@app.patch("/api/interventions/{intervention_id}/status")
+def update_intervention_status(intervention_id: str, status_data: StatusUpdate):
+    for i, item in enumerate(INTERVENTIONS):
+        if item.get("id") == intervention_id:
+            INTERVENTIONS[i]["status"] = status_data.status
+            return {"message": "Status updated", "intervention": INTERVENTIONS[i]}
+    raise HTTPException(status_code=404, detail="Intervention not found")
+
 class Ticket(BaseModel):
     id: str | None = None
     ticket_number: str

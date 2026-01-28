@@ -74,6 +74,39 @@ function InterventionList() {
         setSearchParams({});
     };
 
+    const handleStatusChange = async (id, newStatus) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/interventions/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                setInterventions(interventions.map(i => i.id === id ? { ...i, status: newStatus } : i));
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
+
+    const StatusSelector = ({ id, currentStatus }) => {
+        const statuses = ["NOUVEAU", "EN COURS", "TERMINÉ", "EN ATTENTE", "ANNULÉ"];
+        return (
+            <div className={`status-badge-container status-${currentStatus.replace(/\s+/g, '-').toLowerCase()}`}>
+                <select
+                    value={currentStatus}
+                    onChange={(e) => handleStatusChange(id, e.target.value)}
+                    className="status-select"
+                >
+                    {statuses.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                    ))}
+                </select>
+            </div>
+        );
+    };
+
     return (
         <div className="intervention-list-container">
             <div className="intervention-list-header">
@@ -108,9 +141,7 @@ function InterventionList() {
                 ) : (
                     filteredInterventions.map((item) => (
                         <div key={item.id} className={`intervention-card ${item.type}`}>
-                            <div className={`status-badge status-${item.status.replace(/\s+/g, '-').toLowerCase()}`}>
-                                {item.status}
-                            </div>
+                            <StatusSelector id={item.id} currentStatus={item.status} />
 
                             <div className="card-header">
                                 <div className="type-icon-bg">

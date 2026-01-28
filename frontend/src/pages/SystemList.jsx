@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt } from "react-icons/fa";
 import "./SystemList.css";
 
 function SystemList() {
     const [systems, setSystems] = useState([]);
     const [clients, setClients] = useState({});
+    const [selectedSystem, setSelectedSystem] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -62,6 +64,16 @@ function SystemList() {
 
     const clearFilter = () => {
         setSearchParams({});
+    };
+
+    const openDetails = (system) => {
+        setSelectedSystem(system);
+        setIsModalOpen(true);
+    };
+
+    const closeDetails = () => {
+        setIsModalOpen(false);
+        setSelectedSystem(null);
     };
 
     return (
@@ -122,6 +134,9 @@ function SystemList() {
                             </div>
 
                             <div className="system-card-footer">
+                                <button className="details-btn" onClick={() => openDetails(system)}>
+                                    <FaInfoCircle size={16} /> Détails
+                                </button>
                                 <button className="edit-btn" onClick={() => handleEdit(system)}>
                                     <FaEdit size={16} /> Modifier
                                 </button>
@@ -133,6 +148,127 @@ function SystemList() {
                     ))
                 )}
             </div>
+
+            {/* Modal de détails système */}
+            {isModalOpen && selectedSystem && (
+                <div className="modal-overlay" onClick={closeDetails}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Détails du Système</h2>
+                            <button className="close-btn" onClick={closeDetails}>
+                                <FaTimes size={24} />
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="detail-section">
+                                <h3><FaCogs size={20} /> Informations Générales</h3>
+                                <div className="detail-grid">
+                                    <div className="detail-item">
+                                        <label>Nom du monitoring</label>
+                                        <p>{selectedSystem.monitoring_name}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Client</label>
+                                        <p>{clients[selectedSystem.client_id]?.nom || "Client inconnu"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Type d'installation</label>
+                                        <p><span className="category-pill">{selectedSystem.installation_type}</span></p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Puissance (VA)</label>
+                                        <p>{selectedSystem.power_va} VA</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Date de mise en service</label>
+                                        <p>{selectedSystem.commissioning_date || "N/A"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Agence</label>
+                                        <p>{selectedSystem.agency}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Ingénieur</label>
+                                        <p>{selectedSystem.engineer}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Victron Site ID</label>
+                                        <p>{selectedSystem.victron_site_id || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="detail-section">
+                                <h3><FaTools size={20} /> Composants Techniques</h3>
+                                <div className="detail-grid">
+                                    <div className="detail-item">
+                                        <label>Panneaux PV</label>
+                                        <p>{selectedSystem.pv_type || "N/A"} ({selectedSystem.pv_count || 0})</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Inverter / Charger</label>
+                                        <p>{selectedSystem.inverter_charger_type || "N/A"} ({selectedSystem.inverter_charger_count || 0})</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Onduleur PV</label>
+                                        <p>{selectedSystem.pv_inverter_type || "N/A"} ({selectedSystem.pv_inverter_count || 0})</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Batteries</label>
+                                        <p>{selectedSystem.battery_type || "N/A"} ({selectedSystem.battery_count || 0})</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="detail-section">
+                                <h3><FaUser size={20} /> Contact Site</h3>
+                                <div className="detail-grid">
+                                    <div className="detail-item">
+                                        <label>Technicien Site</label>
+                                        <p>{selectedSystem.site_technician_name || "N/A"}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Téléphone Technicien</label>
+                                        <p>{selectedSystem.site_technician_phone || "N/A"}</p>
+                                    </div>
+                                    <div className="detail-item full-width">
+                                        <label>Localisation exacte</label>
+                                        <p>{selectedSystem.location || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="detail-section">
+                                <h3><FaFileAlt size={20} /> Contrat & Commentaires</h3>
+                                <div className="detail-grid">
+                                    <div className="detail-item">
+                                        <label>Type de contrat</label>
+                                        <p>{selectedSystem.contract_type}</p>
+                                    </div>
+                                    <div className="detail-item">
+                                        <label>Durée du contrat (mois)</label>
+                                        <p>{selectedSystem.contract_duration_months} mois</p>
+                                    </div>
+                                    <div className="detail-item full-width">
+                                        <label>Commentaires</label>
+                                        <p style={{ whiteSpace: 'pre-wrap' }}>{selectedSystem.comments || "Aucun commentaire."}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button className="modal-edit-btn" onClick={() => { handleEdit(selectedSystem); closeDetails(); }}>
+                                <FaEdit size={18} /> Modifier le système
+                            </button>
+                            <button className="modal-close-btn" onClick={closeDetails}>
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
