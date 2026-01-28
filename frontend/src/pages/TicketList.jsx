@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     FaPlus, FaTicketAlt, FaClock, FaUser, FaCircle,
     FaExclamationCircle, FaEdit, FaTrashAlt, FaPhone, FaLink, FaInfoCircle, FaTimes
@@ -12,12 +12,16 @@ function TicketList() {
     const [allInterventions, setAllInterventions] = useState([]);
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const statusFilter = searchParams.get("status");
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const filteredTickets = user.role === "ADMIN"
-        ? tickets
-        : tickets.filter(t => t.assigned_to === user.full_name);
+    const filteredTickets = tickets.filter(t => {
+        const matchesUser = user.role === "ADMIN" || t.assigned_to === user.full_name;
+        const matchesStatus = !statusFilter || statusFilter.split(',').includes(t.status);
+        return matchesUser && matchesStatus;
+    });
 
     useEffect(() => {
         fetchTickets();

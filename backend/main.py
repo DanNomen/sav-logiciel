@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import uuid
+import datetime
 
 app = FastAPI()
 
@@ -20,12 +22,17 @@ class User(BaseModel):
     role: str  # "ADMIN" or "TECHNICIEN"
     full_name: str | None = None
 
-# Mock user data
+# Mock data storage (in-memory)
 USERS = [
     {"id": "1", "email": "admin@example.com", "password": "admin", "role": "ADMIN", "full_name": "Admin Principal"},
     {"id": "2", "email": "tech@example.com", "password": "tech", "role": "TECHNICIEN", "full_name": "Technicien Test"},
     {"id": "3", "email": "test@example.com", "password": "123456", "role": "ADMIN", "full_name": "Utilisateur Test (Admin)"}
 ]
+CLIENTS = []
+SYSTEMS = []
+INTERVENTIONS = []
+TICKETS = []
+NOTIFICATIONS = []
 
 @app.get("/")
 def root():
@@ -80,9 +87,8 @@ def update_user(user_id: str, user: User):
             return {"message": "User updated", "user": updated_data}
     raise HTTPException(status_code=404, detail="User not found")
 
-CLIENTS = []
 
-import uuid
+# Mock user data
 
 class Client(BaseModel):
     id: str | None = None
@@ -108,7 +114,6 @@ def create_client(client: Client, user_name: str | None = "Syst√®me", user_role:
     client_data = client.model_dump()
     client_data["id"] = str(uuid.uuid4())
     
-    import datetime
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     client_data["created_at"] = now
     client_data["updated_at"] = now
@@ -146,7 +151,6 @@ def update_client(client_id: str, client: Client, user_name: str | None = "Syst√
         if c.get("id") == client_id:
             new_data = client.model_dump()
             
-            # Detect changes for notification
             changes = []
             fields_to_check = ["nom", "client", "telephone", "email", "categorie", "localisation", "technicien"]
             for field in fields_to_check:
@@ -155,7 +159,6 @@ def update_client(client_id: str, client: Client, user_name: str | None = "Syst√
                 if old_val != new_val:
                     changes.append(f"{field.upper()} : '{old_val}' ‚Üí '{new_val}'")
             
-            import datetime
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
             new_data["id"] = client_id
@@ -213,8 +216,6 @@ class System(BaseModel):
     paid: bool = False
     next_payment_date: str | None = None
 
-SYSTEMS = []
-
 @app.get("/api/systems")
 def get_systems():
     return SYSTEMS
@@ -259,8 +260,6 @@ class Intervention(BaseModel):
     material_changed: str | None = None # for corrective
     images: list[str] | None = []
 
-INTERVENTIONS = []
-
 @app.get("/api/interventions")
 def get_interventions():
     return INTERVENTIONS
@@ -271,7 +270,6 @@ def create_intervention(intervention: Intervention):
     intervention_data["id"] = str(uuid.uuid4())
     
     # Generate intervention number (IP-YYYY-XXX or IC-YYYY-XXX)
-    import datetime
     year = datetime.datetime.now().year
     prefix = "IP" if intervention_data["type"] == "preventive" else "IC"
     count = len([i for i in INTERVENTIONS if i["type"] == intervention_data["type"]]) + 1
@@ -324,10 +322,6 @@ class Ticket(BaseModel):
     deadline_date: str | None = None
     resolution_date: str | None = None
     files: list[str] | None = []
-
-TICKETS = []
-
-NOTIFICATIONS = []
 
 @app.get("/api/notifications")
 def get_notifications():

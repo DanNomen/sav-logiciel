@@ -68,27 +68,35 @@ function Notifications() {
     return (
         <div className="notifications-container">
             <div className="notifications-header">
-                <div className="title-group">
-                    <h1>Notifications</h1>
-                    <span className="notif-count">{notifications.filter(n => !n.read).length} non lue(s)</span>
+                <div className="header-left">
+                    <div className="title-group">
+                        <h1>Notifications</h1>
+                        <span className="notif-count">{notifications.filter(n => !n.read).length} non lue(s)</span>
+                    </div>
                 </div>
-                {notifications.some(n => !n.read) && (
-                    <button className="read-all-btn" onClick={markAllAsRead}>
-                        <FaCheckDouble /> Tout marquer comme lu
-                    </button>
-                )}
+
+                <div className="header-center">
+                    <div className="search-box">
+                        <FaSearch className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder="Rechercher par client, utilisateur ou détails..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="header-right">
+                    {notifications.some(n => !n.read) && (
+                        <button className="read-all-btn" onClick={markAllAsRead}>
+                            <FaCheckDouble /> <span className="btn-text">Tout marquer comme lu</span>
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="filter-bar">
-                <div className="search-box">
-                    <FaSearch />
-                    <input
-                        type="text"
-                        placeholder="Rechercher un client, un utilisateur ou une action..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
                 <div className="filter-options">
                     <button
                         className={filterType === 'all' ? 'active' : ''}

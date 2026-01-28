@@ -14,6 +14,8 @@ function InterventionList() {
     const navigate = useNavigate();
 
     const clientIdFilter = searchParams.get("clientId");
+    const typeFilter = searchParams.get("type");
+    const horsTicketFilter = searchParams.get("horsTicket") === "true";
 
     useEffect(() => {
         fetchData();
@@ -68,9 +70,13 @@ function InterventionList() {
         }
     };
 
-    const filteredInterventions = clientIdFilter
-        ? interventions.filter(i => i.client_id === clientIdFilter)
-        : interventions;
+    const filteredInterventions = interventions.filter(i => {
+        const matchesClient = !clientIdFilter || i.client_id === clientIdFilter;
+        const matchesType = !typeFilter || i.type === typeFilter;
+        const matchesHorsTicket = !horsTicketFilter || (!i.ticket_id || i.ticket_id === "");
+
+        return matchesClient && matchesType && matchesHorsTicket;
+    });
 
     const clearFilter = () => {
         setSearchParams({});
@@ -128,6 +134,24 @@ function InterventionList() {
                         <div className="filter-badge">
                             <FaFilter size={12} />
                             <span>Client: {clients[clientIdFilter]?.nom || "..."}</span>
+                            <button className="clear-filter-btn" onClick={clearFilter}>
+                                <FaTimes size={12} />
+                            </button>
+                        </div>
+                    )}
+                    {typeFilter && (
+                        <div className="filter-badge">
+                            <FaFilter size={12} />
+                            <span>Type: {typeFilter === "preventive" ? "Préventive" : "Corrective"}</span>
+                            <button className="clear-filter-btn" onClick={clearFilter}>
+                                <FaTimes size={12} />
+                            </button>
+                        </div>
+                    )}
+                    {horsTicketFilter && (
+                        <div className="filter-badge">
+                            <FaFilter size={12} />
+                            <span>Hors Ticket</span>
                             <button className="clear-filter-btn" onClick={clearFilter}>
                                 <FaTimes size={12} />
                             </button>

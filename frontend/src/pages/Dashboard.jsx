@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { FaUser, FaCogs, FaTicketAlt, FaShieldAlt, FaExclamationTriangle, FaClock, FaCalendarAlt } from "react-icons/fa";
 
@@ -15,6 +16,7 @@ function Dashboard() {
     });
 
     const [currentTime, setCurrentTime] = useState(new Date());
+    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -95,7 +97,7 @@ function Dashboard() {
             </div>
 
             <div className="stats-grid">
-                <div className="stat-card clients-card">
+                <div className="stat-card clients-card" onClick={() => navigate("/clients")}>
                     <div className="stat-icon">
                         <FaUser size={30} />
                     </div>
@@ -105,7 +107,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div className="stat-card systems-card">
+                <div className="stat-card systems-card" onClick={() => navigate("/systems")}>
                     <div className="stat-icon">
                         <FaCogs size={30} />
                     </div>
@@ -115,7 +117,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div className="stat-card tickets-card">
+                <div className="stat-card tickets-card" onClick={() => navigate("/tickets?status=Ouvert,En Attente")}>
                     <div className="stat-icon">
                         <FaTicketAlt size={30} />
                     </div>
@@ -125,7 +127,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div className="stat-card closed-tickets-card">
+                <div className="stat-card closed-tickets-card" onClick={() => navigate("/tickets?status=Fermé")}>
                     <div className="stat-icon">
                         <FaTicketAlt size={30} />
                     </div>
@@ -140,23 +142,23 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div className="stat-card unlinked-ip-card">
+                <div className="stat-card unlinked-ip-card" onClick={() => navigate("/interventions?type=preventive")}>
                     <div className="stat-icon">
                         <FaShieldAlt size={30} />
                     </div>
                     <div className="stat-info">
-                        <h3>IP Hors Ticket</h3>
-                        <p className="stat-number">{stats.unlinkedIP}</p>
+                        <h3>Interventions IP</h3>
+                        <p className="stat-number">{stats.unlinkedIP + stats.closedIP}</p>
                     </div>
                 </div>
 
-                <div className="stat-card unlinked-ic-card">
+                <div className="stat-card unlinked-ic-card" onClick={() => navigate("/interventions?type=corrective")}>
                     <div className="stat-icon">
                         <FaExclamationTriangle size={30} />
                     </div>
                     <div className="stat-info">
-                        <h3>IC Hors Ticket</h3>
-                        <p className="stat-number">{stats.unlinkedIC}</p>
+                        <h3>Interventions IC</h3>
+                        <p className="stat-number">{stats.unlinkedIC + stats.closedIC}</p>
                     </div>
                 </div>
             </div>
