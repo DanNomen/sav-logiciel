@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
-import { FaUser, FaCogs, FaTicketAlt, FaShieldAlt, FaExclamationTriangle } from "react-icons/fa";
+import { FaUser, FaCogs, FaTicketAlt, FaShieldAlt, FaExclamationTriangle, FaClock, FaCalendarAlt } from "react-icons/fa";
 
 function Dashboard() {
     const [stats, setStats] = useState({
@@ -13,6 +13,15 @@ function Dashboard() {
         unlinkedIP: 0,
         unlinkedIC: 0
     });
+
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -58,10 +67,31 @@ function Dashboard() {
         fetchStats();
     }, []);
 
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
-                <h1>Dashboard</h1>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p className="dashboard-subtitle">Aperçu global de l'activité</p>
+                </div>
+                <div className="real-time-clock">
+                    <div className="clock-item">
+                        <FaClock className="clock-icon" />
+                        <span className="time-text">{formatTime(currentTime)}</span>
+                    </div>
+                    <div className="date-item">
+                        <FaCalendarAlt className="date-icon" />
+                        <span className="date-text">{formatDate(currentTime)}</span>
+                    </div>
+                </div>
             </div>
 
             <div className="stats-grid">
