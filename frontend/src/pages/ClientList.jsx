@@ -16,7 +16,9 @@ import {
     FaCogs,
     FaShieldAlt,
     FaExclamationTriangle,
-    FaTools
+    FaTools,
+    FaSearch,
+    FaFilter
 } from "react-icons/fa";
 import "./ClientList.css";
 
@@ -26,6 +28,8 @@ function ClientList() {
     const [interventions, setInterventions] = useState([]);
     const [selectedClient, setSelectedClient] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterCategory, setFilterCategory] = useState("all");
     const navigate = useNavigate();
     const userRole = JSON.parse(localStorage.getItem("user") || "{}").role;
 
@@ -90,23 +94,65 @@ function ClientList() {
         setSelectedClient(null);
     };
 
+    const filteredClients = clients.filter(c => {
+        const matchesSearch =
+            (c.nom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (c.client || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (c.telephone || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCategory = filterCategory === "all" || c.categorie === filterCategory;
+
+        return matchesSearch && matchesCategory;
+    });
+
     return (
         <div className="client-list-container">
             <div className="client-list-header">
-                <h1>Liste des Clients</h1>
-                <button className="new-client-btn" onClick={() => navigate("/add-client")}>
-                    <FaPlus size={20} /> Nouveau Client
-                </button>
+                <div className="header-title-section">
+                    <h1>Liste des Clients</h1>
+                    <span className="client-count">{filteredClients.length} client(s)</span>
+                </div>
+
+                <div className="header-actions">
+                    <div className="search-filter-container">
+                        <div className="search-wrapper">
+                            <FaSearch className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="Rechercher un client ou code..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="filter-wrapper">
+                            <FaFilter className="filter-icon" />
+                            <select
+                                value={filterCategory}
+                                onChange={(e) => setFilterCategory(e.target.value)}
+                            >
+                                <option value="all">Toutes catégories</option>
+                                <option value="petrolier">Pétrolier</option>
+                                <option value="ong">ONG</option>
+                                <option value="bailleur">Bailleur</option>
+                                <option value="societe">Société</option>
+                                <option value="particulier">Particulier</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button className="new-client-btn" onClick={() => navigate("/add-client")}>
+                        <FaPlus size={20} /> Nouveau Client
+                    </button>
+                </div>
             </div>
 
             <div className="client-grid">
-                {clients.length === 0 ? (
+                {filteredClients.length === 0 ? (
                     <div className="no-clients-message">
                         <FaUser size={48} />
-                        <p>Aucun client trouvé.</p>
+                        <p>{searchTerm || filterCategory !== 'all' ? "Aucun client ne correspond à votre recherche." : "Aucun client trouvé."}</p>
                     </div>
                 ) : (
-                    clients.map((client) => (
+                    filteredClients.map((client) => (
                         <div key={client.id || client.nom} className="client-card animate-fadeIn">
                             <div className="card-badge">{client.categorie}</div>
                             <div className="card-header">
