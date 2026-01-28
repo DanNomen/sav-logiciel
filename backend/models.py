@@ -1,0 +1,106 @@
+from sqlalchemy import Column, String, Integer, Boolean, Text, JSON, DateTime, ForeignKey, Float
+from .database import Base
+import datetime
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(String, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    role = Column(String)
+    full_name = Column(String, nullable=True)
+
+class Client(Base):
+    __tablename__ = "clients"
+    id = Column(String, primary_key=True, index=True)
+    client = Column(String, nullable=True)
+    nom = Column(String)
+    telephone = Column(String)
+    email = Column(String, nullable=True)
+    categorie = Column(String)
+    localisation = Column(String, nullable=True)
+    technicien = Column(String, nullable=True)
+    created_at = Column(String, nullable=True)
+    updated_at = Column(String, nullable=True)
+    created_by = Column(String, nullable=True)
+    updated_by = Column(String, nullable=True)
+    history = Column(JSON, default=[])
+
+class System(Base):
+    __tablename__ = "systems"
+    id = Column(String, primary_key=True, index=True)
+    monitoring_name = Column(String)
+    engineer = Column(String)
+    agency = Column(String)
+    installation_type = Column(String)
+    power_va = Column(Integer)
+    commissioning_date = Column(String)
+    contract_type = Column(String)
+    contract_duration_months = Column(Integer)
+    client_id = Column(String, ForeignKey("clients.id"))
+    site_technician_name = Column(String, nullable=True)
+    site_technician_phone = Column(String, nullable=True)
+    victron_site_id = Column(String, nullable=True)
+    comments = Column(Text, nullable=True)
+    location = Column(String, nullable=True)
+    pv_type = Column(String, nullable=True)
+    pv_count = Column(Integer, default=0)
+    inverter_charger_type = Column(String, nullable=True)
+    inverter_charger_count = Column(Integer, default=0)
+    pv_inverter_type = Column(String, nullable=True)
+    pv_inverter_count = Column(Integer, default=0)
+    battery_type = Column(String, nullable=True)
+    battery_count = Column(Integer, default=0)
+    solar_regulator_type = Column(String, nullable=True)
+    solar_regulator_count = Column(Integer, default=0)
+    paid = Column(Boolean, default=False)
+    next_payment_date = Column(String, nullable=True)
+
+class Intervention(Base):
+    __tablename__ = "interventions"
+    id = Column(String, primary_key=True, index=True)
+    intervention_number = Column(String, nullable=True)
+    type = Column(String)
+    title = Column(String)
+    client_id = Column(String, ForeignKey("clients.id"))
+    system_id = Column(String, ForeignKey("systems.id"))
+    technician = Column(String)
+    date = Column(String)
+    status = Column(String, default="NOUVEAU")
+    ticket_id = Column(String, nullable=True)
+    observation = Column(Text, nullable=True)
+    context = Column(Text, nullable=True)
+    resolution = Column(Text, nullable=True)
+    material_changed = Column(Text, nullable=True)
+    images = Column(JSON, default=[])
+
+class Ticket(Base):
+    __tablename__ = "tickets"
+    id = Column(String, primary_key=True, index=True)
+    ticket_number = Column(String)
+    subject = Column(String)
+    request_date = Column(String)
+    requester = Column(String)
+    priority = Column(String)
+    client_id = Column(String, ForeignKey("clients.id"))
+    assigned_to = Column(String)
+    description = Column(Text)
+    status = Column(String)
+    next_step = Column(String, nullable=True)
+    resolution_time = Column(Float, default=0)
+    comment = Column(Text, nullable=True)
+    deadline_date = Column(String, nullable=True)
+    resolution_date = Column(String, nullable=True)
+    files = Column(JSON, default=[])
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id = Column(String, primary_key=True, index=True)
+    type = Column(String)
+    item_type = Column(String)
+    item_name = Column(String)
+    user = Column(String)
+    role = Column(String)
+    date = Column(String)
+    details = Column(Text)
+    read = Column(Boolean, default=False)

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSearch } from "react-icons/fa";
 import "./SystemList.css";
 
 function SystemList() {
@@ -9,6 +9,7 @@ function SystemList() {
     const [selectedSystem, setSelectedSystem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
     const clientIdFilter = searchParams.get("clientId");
@@ -58,9 +59,12 @@ function SystemList() {
         navigate("/add-system", { state: { system } });
     };
 
-    const filteredSystems = clientIdFilter
-        ? systems.filter(s => s.client_id === clientIdFilter)
-        : systems;
+    const filteredSystems = systems.filter(s => {
+        const matchesClient = !clientIdFilter || s.client_id === clientIdFilter;
+        const matchesSearch = (s.monitoring_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (clients[s.client_id]?.nom || "").toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesClient && matchesSearch;
+    });
 
     const clearFilter = () => {
         setSearchParams({});
@@ -91,6 +95,17 @@ function SystemList() {
                         </div>
                     )}
                 </div>
+
+                <div className="header-search-box">
+                    <FaSearch className="search-icon" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher un système ou un client..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
                 <button className="new-system-btn" onClick={() => navigate("/add-system")}>
                     <FaPlus size={20} /> Nouveau Système
                 </button>
