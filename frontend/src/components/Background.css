@@ -1,0 +1,63 @@
+.app-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1c22 0%, #0d0e12 100%);
+    z-index: -1;
+    /* Behind everything */
+    overflow: hidden;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.2) 100%);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(118, 75, 162, 0.6) 0%, rgba(102, 126, 234, 0.2) 100%);
+    bottom: -150px;
+    right: -150px;
+    animation-delay: 7s;
+}
+
+.orb-3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(102, 126, 234, 0.2) 100%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 3s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -30px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}

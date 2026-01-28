@@ -1,0 +1,309 @@
+.intervention-list-container {
+    padding: 2.5rem;
+    width: 100%;
+}
+
+.intervention-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.intervention-list-header h1 {
+    font-size: 2.2rem;
+    color: white;
+}
+
+.header-title-area {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.filter-badge {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.clear-filter-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.clear-filter-btn:hover {
+    color: #ff6b6b;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.new-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.3s ease;
+}
+
+.new-btn.preventive {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.new-btn.corrective {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.new-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+.intervention-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+}
+
+.intervention-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 1.8rem;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intervention-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.intervention-card.preventive {
+    border-top: 4px solid #10b981;
+}
+
+.intervention-card.corrective {
+    border-top: 4px solid #f59e0b;
+}
+
+/* Status Badges */
+.status-badge {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-nouveau {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.status-en-cours {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.status-terminé {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.status-en-attente {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.status-annulé {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.type-icon-bg {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preventive .type-icon-bg {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.corrective .type-icon-bg {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.header-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.client-subtitle {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.2rem;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.summary-preview {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.8rem;
+    border-radius: 12px;
+}
+
+.linked-ticket {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    color: #a5b4fc !important;
+    font-weight: 600;
+}
+
+.hors-ticket {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+}
+
+.hors-ticket-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.int-number-pill {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.edit-btn-small,
+.delete-btn-small {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-btn-small:hover {
+    background: #f1c40f;
+    border-color: #f1c40f;
+    color: #000;
+}
+
+.delete-btn-small:hover {
+    background: #e74c3c;
+    border-color: #e74c3c;
+    color: white;
+}

@@ -1,0 +1,259 @@
+.notifications-container {
+    padding: 2.5rem;
+    min-height: 100vh;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.notifications-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.notif-count {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    margin-left: 1rem;
+}
+
+.read-all-btn {
+    background: rgba(99, 102, 241, 0.1);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.read-all-btn:hover {
+    background: rgba(99, 102, 241, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-box {
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box svg {
+    position: absolute;
+    left: 1rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.search-box input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+.filter-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-options button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.filter-options button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.filter-options button.active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.notif-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.notif-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
+}
+
+.notif-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.icon-creation {
+    color: #10b981;
+}
+
+.icon-modification {
+    color: #3b82f6;
+}
+
+.notif-body {
+    flex: 1;
+}
+
+.notif-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.notif-item {
+    font-weight: 700;
+    color: white;
+}
+
+.notif-date {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.notif-msg {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.notif-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.user-pill {
+    color: white;
+    font-weight: 600;
+}
+
+.role-tag {
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.role-tag.ADMIN {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.role-tag.TECHNICIEN {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+}
+
+.tech-alert {
+    border-left: 4px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.admin-alert-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: #f59e0b;
+    color: #1e293b;
+    padding: 0.2rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+}
+
+.notif-card.unread {
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    cursor: pointer;
+}
+
+.unread-dot {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: #6366f1;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #6366f1;
+}
+
+.empty-notif {
+    text-align: center;
+    padding: 10rem 0;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.empty-notif p {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+}

@@ -1,0 +1,207 @@
+@import "tailwindcss";
+
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f9fafb;
+}
+
+/* ===== SCROLLBAR PERSONNALISÉ ===== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ===== LIENS ===== */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.6s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+/* ===== UTILITAIRES ===== */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-medium {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-strong {
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== TRANSITIONS ===== */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-fast {
+  transition: all 0.15s ease;
+}
+
+.transition-slow {
+  transition: all 0.5s ease;
+}
+
+/* ===== FOCUS STATES ===== */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ===== DISABLED STATES ===== */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== LOADING SPINNER ===== */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== RESPONSIVE HELPERS ===== */
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ===== LAYOUT HELPERS ===== */
+@media (min-width: 768px) {
+  .sidebar-layout-content {
+    margin-left: 250px;
+    /* width: calc(100% - 250px); */
+    /* flex: 1 handles width usually, but margin is key */
+  }
+}

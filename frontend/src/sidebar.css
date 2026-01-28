@@ -1,0 +1,166 @@
+/* ===== HAMBURGER ===== */
+.hamburger {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  cursor: pointer;
+  color: white;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  /* caché */
+  width: 250px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.user-profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-menu li:hover {
+  color: #667eea;
+  transform: translateX(5px);
+}
+
+.logout-item {
+  margin-top: auto;
+  /* Pushes to bottom */
+  color: #ff6b6b;
+  font-weight: bold;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.logout-item:hover {
+  color: #ff4757 !important;
+}
+
+/* ===== OVERLAY ===== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .hamburger {
+    display: none;
+  }
+
+  .sidebar {
+    left: 0;
+  }
+
+  .overlay {
+    display: none;
+  }
+}
+
+.notif-menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notif-badge {
+  position: absolute;
+  right: 1.5rem;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+}
