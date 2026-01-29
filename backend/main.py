@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- CRÉATION UTILISATEUR PAR DÉFAUT ---
+# --- CREATION UTILISATEUR PAR DEFAUT ---
 def create_default_admin():
     db = SessionLocal()
     try:
@@ -33,13 +33,13 @@ def create_default_admin():
                 email="admin@example.com",
                 password="admin", # En prod, vous devriez hacher le mot de passe
                 role="ADMIN",
-                full_name="Administrateur Système"
+                full_name="Administrateur"
             )
             db.add(new_admin)
             db.commit()
-            print("Utilisateur admin par défaut créé : admin@example.com / admin")
+            print("Utilisateur admin par defaut cree : admin@example.com / admin")
     except Exception as e:
-        print(f"Erreur lors de la création de l'admin : {e}")
+        print(f"Erreur lors de la creation de l'admin : {e}")
     finally:
         db.close()
 
@@ -182,14 +182,14 @@ def get_clients(db: Session = Depends(get_db)):
     return db.query(models.Client).all()
 
 @app.post("/api/clients")
-def create_client(client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def create_client(client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         client_id = str(uuid.uuid4())
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        new_client = models.Client(**client.model_dump(), id=client_id, created_at=now, updated_at=now, created_by=user_name, history=[{"action": "Création", "date": now, "user": user_name}])
+        new_client = models.Client(**client.model_dump(), id=client_id, created_at=now, updated_at=now, created_by=user_name, history=[{"action": "Creation", "date": now, "user": user_name}])
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Nouveau client créé par {user_name} : {client.nom}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Nouveau client cree par {user_name} : {client.nom}", read=False))
         
         db.add(new_client)
         db.commit()
@@ -206,11 +206,11 @@ def delete_client(client_id: str, db: Session = Depends(get_db)):
     return {"message": "Supprimé"}
 
 @app.put("/api/clients/{client_id}")
-def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         db_client = db.query(models.Client).filter(models.Client.id == client_id).first()
         if not db_client:
-            raise HTTPException(status_code=404, detail="Client non trouvé")
+            raise HTTPException(status_code=404, detail="Client non trouve")
         
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         update_data = client.model_dump()
@@ -222,7 +222,7 @@ def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_
         db_client.updated_by = user_name
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Client '{client.nom}' mis à jour par {user_name}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Client '{client.nom}' mis a jour par {user_name}", read=False))
         
         db.commit()
         db.refresh(db_client)
@@ -238,13 +238,13 @@ def get_systems(db: Session = Depends(get_db)):
     return db.query(models.System).all()
 
 @app.post("/api/systems")
-def create_system(system: SystemBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def create_system(system: SystemBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         new_sys = models.System(**system.model_dump(), id=str(uuid.uuid4()), created_at=now, updated_at=now, created_by=user_name)
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Système", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Nouveau système créé par {user_name} : {system.monitoring_name}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Systeme", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Nouveau systeme cree par {user_name} : {system.monitoring_name}", read=False))
         
         db.add(new_sys)
         db.commit()
@@ -255,11 +255,11 @@ def create_system(system: SystemBase, db: Session = Depends(get_db), user_name: 
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/api/systems/{system_id}")
-def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         db_system = db.query(models.System).filter(models.System.id == system_id).first()
         if not db_system:
-            raise HTTPException(status_code=404, detail="Système non trouvé")
+            raise HTTPException(status_code=404, detail="Systeme non trouve")
         
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for key, value in system.model_dump().items():
@@ -269,7 +269,7 @@ def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_
         db_system.updated_by = user_name
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Système", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Système '{system.monitoring_name}' mis à jour par {user_name}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Systeme", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Systeme '{system.monitoring_name}' mis a jour par {user_name}", read=False))
         
         db.commit()
         db.refresh(db_system)
@@ -285,7 +285,7 @@ def get_interventions(db: Session = Depends(get_db)):
     return db.query(models.Intervention).all()
 
 @app.post("/api/interventions")
-def create_intervention(intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def create_intervention(intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # Génération du numéro IP ou IC
@@ -296,7 +296,7 @@ def create_intervention(intervention: InterventionBase, db: Session = Depends(ge
         new_int = models.Intervention(**intervention.model_dump(), id=str(uuid.uuid4()), intervention_number=num, created_at=now, updated_at=now, created_by=user_name)
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Nouvelle intervention créée par {user_name} : {intervention.title}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Nouvelle intervention creee par {user_name} : {intervention.title}", read=False))
         
         db.add(new_int)
         db.commit()
@@ -307,11 +307,11 @@ def create_intervention(intervention: InterventionBase, db: Session = Depends(ge
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/api/interventions/{intervention_id}")
-def update_intervention(intervention_id: str, intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def update_intervention(intervention_id: str, intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         db_int = db.query(models.Intervention).filter(models.Intervention.id == intervention_id).first()
         if not db_int:
-            raise HTTPException(status_code=404, detail="Intervention non trouvée")
+            raise HTTPException(status_code=404, detail="Intervention non trouvee")
         
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for key, value in intervention.model_dump().items():
@@ -321,7 +321,7 @@ def update_intervention(intervention_id: str, intervention: InterventionBase, db
         db_int.updated_by = user_name
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Intervention '{intervention.title}' mise à jour par {user_name}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Intervention '{intervention.title}' mise a jour par {user_name}", read=False))
         
         db.commit()
         db.refresh(db_int)
@@ -337,13 +337,13 @@ def get_tickets(db: Session = Depends(get_db)):
     return db.query(models.Ticket).all()
 
 @app.post("/api/tickets")
-def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         new_ticket = models.Ticket(**ticket.model_dump(), id=str(uuid.uuid4()), created_at=now, updated_at=now, created_by=user_name)
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Nouveau ticket créé par {user_name} : {ticket.subject}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Nouveau ticket cree par {user_name} : {ticket.subject}", read=False))
         
         db.add(new_ticket)
         db.commit()
@@ -354,11 +354,11 @@ def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: 
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/api/tickets/{ticket_id}")
-def update_ticket(ticket_id: str, ticket: TicketBase, db: Session = Depends(get_db), user_name: str = Query("Système"), user_role: str = Query("TECHNICIEN")):
+def update_ticket(ticket_id: str, ticket: TicketBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
         if not db_ticket:
-            raise HTTPException(status_code=404, detail="Ticket non trouvé")
+            raise HTTPException(status_code=404, detail="Ticket non trouve")
         
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for key, value in ticket.model_dump().items():
@@ -368,7 +368,7 @@ def update_ticket(ticket_id: str, ticket: TicketBase, db: Session = Depends(get_
         db_ticket.updated_by = user_name
         
         # Notif auto
-        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Ticket '{ticket.subject}' mis à jour par {user_name}", read=False))
+        db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Ticket '{ticket.subject}' mis a jour par {user_name}", read=False))
         
         db.commit()
         db.refresh(db_ticket)
