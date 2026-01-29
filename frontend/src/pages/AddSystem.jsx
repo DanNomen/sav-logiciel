@@ -107,7 +107,9 @@ function AddSystem() {
                 alert(isEdit ? "Système mis à jour !" : "Système ajouté avec succès !");
                 navigate("/systems");
             } else {
-                alert("Erreur lors de l'enregistrement");
+                const errorData = await response.json().catch(() => ({}));
+                const detail = errorData.detail || "Erreur inconnue";
+                alert(`Erreur lors de l'enregistrement : ${detail}`);
             }
         } catch (error) {
             console.error("Error saving system:", error);

@@ -64,31 +64,31 @@ class ClientBase(BaseModel):
 
 class SystemBase(BaseModel):
     monitoring_name: str
-    engineer: str
-    agency: str
-    installation_type: str
-    power_va: int
-    commissioning_date: str
-    contract_type: str
-    contract_duration_months: int
+    engineer: str | None = ""
+    agency: str | None = ""
+    installation_type: str | None = ""
+    power_va: int | None = 0
+    commissioning_date: str | None = ""
+    contract_type: str | None = ""
+    contract_duration_months: int | None = 0
     client_id: str
-    site_technician_name: str | None = None
-    site_technician_phone: str | None = None
-    victron_site_id: str | None = None
-    comments: str | None = None
-    location: str | None = None
-    pv_type: str | None = None
+    site_technician_name: str | None = ""
+    site_technician_phone: str | None = ""
+    victron_site_id: str | None = ""
+    comments: str | None = ""
+    location: str | None = ""
+    pv_type: str | None = ""
     pv_count: int | None = 0
-    inverter_charger_type: str | None = None
+    inverter_charger_type: str | None = ""
     inverter_charger_count: int | None = 0
-    pv_inverter_type: str | None = None
+    pv_inverter_type: str | None = ""
     pv_inverter_count: int | None = 0
-    battery_type: str | None = None
+    battery_type: str | None = ""
     battery_count: int | None = 0
-    solar_regulator_type: str | None = None
+    solar_regulator_type: str | None = ""
     solar_regulator_count: int | None = 0
     paid: bool = False
-    next_payment_date: str | None = None
+    next_payment_date: str | None = ""
 
 class InterventionBase(BaseModel):
     type: str # preventive / corrective
