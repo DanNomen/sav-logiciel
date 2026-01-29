@@ -70,9 +70,15 @@ function AddSystem() {
         e.preventDefault();
         try {
             const isEdit = !!editData?.id;
-            const url = isEdit
+            const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+            const userName = currentUser.full_name || "Inconnu";
+            const userRole = currentUser.role || "TECHNICIEN";
+
+            const baseUrl = isEdit
                 ? `${API_BASE_URL}/api/systems/${editData.id}`
                 : `${API_BASE_URL}/api/systems`;
+
+            const url = `${baseUrl}?user_name=${encodeURIComponent(userName)}&user_role=${userRole}`;
             const method = isEdit ? "PUT" : "POST";
 
             const response = await fetch(url, {

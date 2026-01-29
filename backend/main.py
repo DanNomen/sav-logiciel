@@ -168,13 +168,13 @@ def get_clients(db: Session = Depends(get_db)):
     return db.query(models.Client).all()
 
 @app.post("/api/clients")
-def create_client(client: ClientBase, db: Session = Depends(get_db)):
+def create_client(client: ClientBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
     client_id = str(uuid.uuid4())
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_client = models.Client(**client.model_dump(), id=client_id, created_at=now, updated_at=now, history=[{"action": "Création", "date": now, "user": "Système"}])
+    new_client = models.Client(**client.model_dump(), id=client_id, created_at=now, updated_at=now, created_by=user_name, history=[{"action": "Création", "date": now, "user": user_name}])
     
     # Notif auto
-    db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Client", item_name=client.nom, date=now, details=f"Nouveau client : {client.nom}", read=False))
+    db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Nouveau client créé par {user_name} : {client.nom}", read=False))
     
     db.add(new_client)
     db.commit()
@@ -187,7 +187,7 @@ def delete_client(client_id: str, db: Session = Depends(get_db)):
     return {"message": "Supprimé"}
 
 @app.put("/api/clients/{client_id}")
-def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db)):
+def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
     db_client = db.query(models.Client).filter(models.Client.id == client_id).first()
     if not db_client:
         raise HTTPException(status_code=404, detail="Client non trouvé")
@@ -199,6 +199,11 @@ def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_
         setattr(db_client, key, value)
     
     db_client.updated_at = now
+    db_client.updated_by = user_name
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Client", item_name=client.nom, user=user_name, role=user_role, date=now, details=f"Client '{client.nom}' mis à jour par {user_name}", read=False))
+    
     db.commit()
     db.refresh(db_client)
     return db_client
@@ -209,20 +214,29 @@ def get_systems(db: Session = Depends(get_db)):
     return db.query(models.System).all()
 
 @app.post("/api/systems")
-def create_system(system: SystemBase, db: Session = Depends(get_db)):
+def create_system(system: SystemBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_sys = models.System(**system.model_dump(), id=str(uuid.uuid4()))
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Système", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Nouveau système créé par {user_name} : {system.monitoring_name}", read=False))
+    
     db.add(new_sys)
     db.commit()
     return new_sys
 
 @app.put("/api/systems/{system_id}")
-def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_db)):
+def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
     db_system = db.query(models.System).filter(models.System.id == system_id).first()
     if not db_system:
         raise HTTPException(status_code=404, detail="Système non trouvé")
     
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for key, value in system.model_dump().items():
         setattr(db_system, key, value)
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Système", item_name=system.monitoring_name, user=user_name, role=user_role, date=now, details=f"Système '{system.monitoring_name}' mis à jour par {user_name}", read=False))
     
     db.commit()
     db.refresh(db_system)
@@ -234,13 +248,18 @@ def get_interventions(db: Session = Depends(get_db)):
     return db.query(models.Intervention).all()
 
 @app.post("/api/interventions")
-def create_intervention(intervention: InterventionBase, db: Session = Depends(get_db)):
+def create_intervention(intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # Génération du numéro IP ou IC
     prefix = "IP" if intervention.type == "preventive" else "IC"
     count = db.query(models.Intervention).filter(models.Intervention.type == intervention.type).count() + 1
     num = f"{prefix}-{datetime.datetime.now().year}-{count:03d}"
     
     new_int = models.Intervention(**intervention.model_dump(), id=str(uuid.uuid4()), intervention_number=num)
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Nouvelle intervention créée par {user_name} : {intervention.title}", read=False))
+    
     db.add(new_int)
     db.commit()
     return new_int
@@ -251,8 +270,13 @@ def get_tickets(db: Session = Depends(get_db)):
     return db.query(models.Ticket).all()
 
 @app.post("/api/tickets")
-def create_ticket(ticket: TicketBase, db: Session = Depends(get_db)):
+def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_ticket = models.Ticket(**ticket.model_dump(), id=str(uuid.uuid4()))
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Nouveau ticket créé par {user_name} : {ticket.subject}", read=False))
+    
     db.add(new_ticket)
     db.commit()
     return new_ticket
