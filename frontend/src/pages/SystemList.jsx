@@ -234,6 +234,10 @@ function SystemList() {
                                         <label>Batteries</label>
                                         <p>{selectedSystem.battery_type || "N/A"} ({selectedSystem.battery_count || 0})</p>
                                     </div>
+                                    <div className="detail-item">
+                                        <label>Régulateurs Solaires</label>
+                                        <p>{selectedSystem.solar_regulator_type || "N/A"} ({selectedSystem.solar_regulator_count || 0})</p>
+                                    </div>
                                 </div>
                             </div>
 

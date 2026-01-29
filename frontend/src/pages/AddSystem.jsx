@@ -60,9 +60,16 @@ function AddSystem() {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        let finalValue = type === "checkbox" ? checked : value;
+
+        // Convert numbers to integers for numeric fields
+        if (type === "number") {
+            finalValue = value === "" ? 0 : parseInt(value, 10);
+        }
+
         setFormData({
             ...formData,
-            [name]: type === "checkbox" ? checked : value
+            [name]: finalValue
         });
     };
 
