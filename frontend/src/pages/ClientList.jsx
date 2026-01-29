@@ -39,25 +39,31 @@ function ClientList() {
     }, []);
 
     const fetchClients = async () => {
-        try {
-            const [cliRes, sysRes, intRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/api/clients`),
-                fetch(`${API_BASE_URL}/api/systems`),
-                fetch(`${API_BASE_URL}/api/interventions`)
-            ]);
+        console.log("DEBUG: Starting data fetch from", API_BASE_URL);
 
-            if (cliRes.ok && sysRes.ok && intRes.ok) {
-                const cliData = await cliRes.json();
-                const sysData = await sysRes.json();
-                const intData = await intRes.json();
-                console.log("DEBUG: Received clients from API:", cliData);
-                setClients(cliData);
-                setSystems(sysData);
-                setInterventions(intData);
+        // Fetch clients
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/clients`);
+            if (res.ok) {
+                const data = await res.json();
+                console.log("DEBUG: Clients received:", data);
+                setClients(data);
+            } else {
+                console.error("DEBUG: API error on clients:", res.status);
             }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+        } catch (e) { console.error("DEBUG: Network error on clients", e); }
+
+        // Fetch systems (independently)
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/systems`);
+            if (res.ok) setSystems(await res.json());
+        } catch (e) { console.error("DEBUG: Network error on systems", e); }
+
+        // Fetch interventions (independently)
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/interventions`);
+            if (res.ok) setInterventions(await res.json());
+        } catch (e) { console.error("DEBUG: Network error on interventions", e); }
     };
 
     const handleDelete = async (e, clientId) => {
