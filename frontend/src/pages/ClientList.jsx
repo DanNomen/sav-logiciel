@@ -50,6 +50,7 @@ function ClientList() {
                 const cliData = await cliRes.json();
                 const sysData = await sysRes.json();
                 const intData = await intRes.json();
+                console.log("DEBUG: Received clients from API:", cliData);
                 setClients(cliData);
                 setSystems(sysData);
                 setInterventions(intData);

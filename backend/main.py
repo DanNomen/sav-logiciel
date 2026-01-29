@@ -126,7 +126,12 @@ class TicketBase(BaseModel):
 
 @app.get("/")
 def root():
-    return {"status": "SAV API Fully Connected to Database"}
+    return {
+        "status": "SAV API Fully Connected",
+        "version": "1.0.2",
+        "database": "PostgreSQL" if "postgresql" in engine.url.drivername else "SQLite",
+        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
 # --- UTILISATEURS ---
 @app.post("/api/login")
@@ -179,7 +184,9 @@ def update_user(user_id: str, user: UserBase, db: Session = Depends(get_db)):
 # --- CLIENTS ---
 @app.get("/api/clients")
 def get_clients(db: Session = Depends(get_db)):
-    return db.query(models.Client).all()
+    clients = db.query(models.Client).all()
+    print(f"DEBUG: Fetching clients list. Found {len(clients)} clients.")
+    return clients
 
 @app.post("/api/clients")
 def create_client(client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
