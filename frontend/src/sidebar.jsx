@@ -8,6 +8,8 @@ function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
   const [notifCount, setNotifCount] = useState(0);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -45,10 +47,26 @@ function Sidebar() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setCurrentTime(timeStr);
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
+  };
+
+  const isWorkingHours = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const timeInMinutes = hours * 60 + minutes;
+    return (timeInMinutes >= 8 * 60 && timeInMinutes < 12 * 60) ||
+      (timeInMinutes >= 13 * 60 && timeInMinutes <= (16 * 60 + 30));
   };
 
   return (
@@ -95,12 +113,42 @@ function Sidebar() {
             </>
           )}
 
-          <li className="logout-item" onClick={handleLogout}>
+          <li className="logout-item" onClick={handleLogoutClick}>
             <FaSignOutAlt /> <span>Déconnexion</span>
           </li>
           <div className="sidebar-version">V-2026-29-0001</div>
         </ul>
       </div>
+
+      {showLogoutModal && (
+        <div className="logout-modal-overlay">
+          <div className="logout-card animate-fadeIn">
+            <div className="logout-card-icon">
+              <FaSignOutAlt size={40} />
+            </div>
+            <h3>Déconnexion</h3>
+            <p className="logout-message">
+              {isWorkingHours() ? (
+                <>
+                  Vous êtes sur le point de vous déconnecter alors qu'il est <strong>{currentTime}</strong>.
+                  <br />
+                  Il faut travailler Monsieur <strong>{user.full_name?.toUpperCase() || "L'UTILISATEUR"}</strong> !
+                </>
+              ) : (
+                "Vous êtes sur le point de vous déconnecter."
+              )}
+            </p>
+            <div className="logout-card-actions">
+              <button className="cancel-btn" onClick={() => setShowLogoutModal(false)}>
+                {isWorkingHours() ? "Retourner au travail" : "Annuler"}
+              </button>
+              {!isWorkingHours() && (
+                <button className="confirm-logout-btn" onClick={confirmLogout}>Se déconnecter</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {isOpen && <div className="overlay" onClick={toggleSidebar}></div>}
     </>
