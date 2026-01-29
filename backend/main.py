@@ -6,7 +6,7 @@ import uuid
 import datetime
 
 # Imports Base de données corrigés pour le serveur
-from database import engine, get_db
+from database import engine, get_db, SessionLocal
 import models
 
 # Création automatique des tables
@@ -21,6 +21,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- CRÉATION UTILISATEUR PAR DÉFAUT ---
+def create_default_admin():
+    db = SessionLocal()
+    try:
+        admin_exists = db.query(models.User).filter(models.User.email == "admin@example.com").first()
+        if not admin_exists:
+            new_admin = models.User(
+                email="admin@example.com",
+                password="admin", # En prod, vous devriez hacher le mot de passe
+                role="ADMIN",
+                full_name="Administrateur Système"
+            )
+            db.add(new_admin)
+            db.commit()
+            print("Utilisateur admin par défaut créé : admin@example.com / admin")
+    except Exception as e:
+        print(f"Erreur lors de la création de l'admin : {e}")
+    finally:
+        db.close()
+
+create_default_admin()
 
 # --- SCHÉMAS DE DONNÉES (Validation Pydantic) ---
 
@@ -94,9 +116,17 @@ def root():
 # --- UTILISATEURS ---
 @app.post("/api/login")
 def login(request: dict, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == request.get("email"), models.User.password == request.get("password")).first()
+    email = request.get("email")
+    password = request.get("password")
+    print(f"Tentative de connexion pour : {email}")
+    
+    user = db.query(models.User).filter(models.User.email == email, models.User.password == password).first()
+    
     if not user:
+        print(f"Échec de connexion pour : {email}")
         raise HTTPException(status_code=401, detail="Identifiants invalides")
+    
+    print(f"Connexion réussie pour : {email} (Rôle: {user.role})")
     return {"token": "abcd1234", "user": {"id": user.id, "email": user.email, "role": user.role, "full_name": user.full_name}}
 
 @app.get("/api/users")
