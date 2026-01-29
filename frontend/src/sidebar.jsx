@@ -98,6 +98,7 @@ function Sidebar() {
           <li className="logout-item" onClick={handleLogout}>
             <FaSignOutAlt /> <span>Déconnexion</span>
           </li>
+          <div className="sidebar-version">V-2026-29-0001</div>
         </ul>
       </div>
 
