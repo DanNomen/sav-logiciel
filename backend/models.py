@@ -55,6 +55,10 @@ class System(Base):
     solar_regulator_count = Column(Integer, default=0)
     paid = Column(Boolean, default=False)
     next_payment_date = Column(String, nullable=True)
+    created_at = Column(String, nullable=True)
+    updated_at = Column(String, nullable=True)
+    created_by = Column(String, nullable=True)
+    updated_by = Column(String, nullable=True)
 
 class Intervention(Base):
     __tablename__ = "interventions"
@@ -71,6 +75,12 @@ class Intervention(Base):
     observation = Column(Text, nullable=True)
     context = Column(Text, nullable=True)
     resolution = Column(Text, nullable=True)
+    material_changed = Column(Text, nullable=True)
+    images = Column(JSON, default=[])
+    created_at = Column(String, nullable=True)
+    updated_at = Column(String, nullable=True)
+    created_by = Column(String, nullable=True)
+    updated_by = Column(String, nullable=True)
     material_changed = Column(Text, nullable=True)
     images = Column(JSON, default=[])
 
@@ -92,6 +102,10 @@ class Ticket(Base):
     deadline_date = Column(String, nullable=True)
     resolution_date = Column(String, nullable=True)
     files = Column(JSON, default=[])
+    created_at = Column(String, nullable=True)
+    updated_at = Column(String, nullable=True)
+    created_by = Column(String, nullable=True)
+    updated_by = Column(String, nullable=True)
 
 class Notification(Base):
     __tablename__ = "notifications"

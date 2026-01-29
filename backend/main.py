@@ -81,7 +81,14 @@ class SystemBase(BaseModel):
     pv_count: int | None = 0
     inverter_charger_type: str | None = None
     inverter_charger_count: int | None = 0
+    pv_inverter_type: str | None = None
+    pv_inverter_count: int | None = 0
+    battery_type: str | None = None
+    battery_count: int | None = 0
+    solar_regulator_type: str | None = None
+    solar_regulator_count: int | None = 0
     paid: bool = False
+    next_payment_date: str | None = None
 
 class InterventionBase(BaseModel):
     type: str # preventive / corrective
@@ -95,6 +102,8 @@ class InterventionBase(BaseModel):
     observation: str | None = None
     context: str | None = None
     resolution: str | None = None
+    material_changed: str | None = None
+    images: list | None = []
 
 class TicketBase(BaseModel):
     ticket_number: str
@@ -107,6 +116,11 @@ class TicketBase(BaseModel):
     description: str
     status: str
     deadline_date: str | None = None
+    next_step: str | None = None
+    resolution_time: float | None = 0
+    comment: str | None = None
+    resolution_date: str | None = None
+    files: list | None = []
 
 # --- ENDPOINTS API ---
 
@@ -255,7 +269,7 @@ def create_intervention(intervention: InterventionBase, db: Session = Depends(ge
     count = db.query(models.Intervention).filter(models.Intervention.type == intervention.type).count() + 1
     num = f"{prefix}-{datetime.datetime.now().year}-{count:03d}"
     
-    new_int = models.Intervention(**intervention.model_dump(), id=str(uuid.uuid4()), intervention_number=num)
+    new_int = models.Intervention(**intervention.model_dump(), id=str(uuid.uuid4()), intervention_number=num, created_at=now, updated_at=now, created_by=user_name)
     
     # Notif auto
     db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Nouvelle intervention créée par {user_name} : {intervention.title}", read=False))
@@ -263,6 +277,26 @@ def create_intervention(intervention: InterventionBase, db: Session = Depends(ge
     db.add(new_int)
     db.commit()
     return new_int
+
+@app.put("/api/interventions/{intervention_id}")
+def update_intervention(intervention_id: str, intervention: InterventionBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
+    db_int = db.query(models.Intervention).filter(models.Intervention.id == intervention_id).first()
+    if not db_int:
+        raise HTTPException(status_code=404, detail="Intervention non trouvée")
+    
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for key, value in intervention.model_dump().items():
+        setattr(db_int, key, value)
+    
+    db_int.updated_at = now
+    db_int.updated_by = user_name
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Intervention", item_name=intervention.title, user=user_name, role=user_role, date=now, details=f"Intervention '{intervention.title}' mise à jour par {user_name}", read=False))
+    
+    db.commit()
+    db.refresh(db_int)
+    return db_int
 
 # --- TICKETS ---
 @app.get("/api/tickets")
@@ -272,7 +306,7 @@ def get_tickets(db: Session = Depends(get_db)):
 @app.post("/api/tickets")
 def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_ticket = models.Ticket(**ticket.model_dump(), id=str(uuid.uuid4()))
+    new_ticket = models.Ticket(**ticket.model_dump(), id=str(uuid.uuid4()), created_at=now, updated_at=now, created_by=user_name)
     
     # Notif auto
     db.add(models.Notification(id=str(uuid.uuid4()), type="creation", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Nouveau ticket créé par {user_name} : {ticket.subject}", read=False))
@@ -280,6 +314,26 @@ def create_ticket(ticket: TicketBase, db: Session = Depends(get_db), user_name: 
     db.add(new_ticket)
     db.commit()
     return new_ticket
+
+@app.put("/api/tickets/{ticket_id}")
+def update_ticket(ticket_id: str, ticket: TicketBase, db: Session = Depends(get_db), user_name: str = "Système", user_role: str = "TECHNICIEN"):
+    db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not db_ticket:
+        raise HTTPException(status_code=404, detail="Ticket non trouvé")
+    
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for key, value in ticket.model_dump().items():
+        setattr(db_ticket, key, value)
+    
+    db_ticket.updated_at = now
+    db_ticket.updated_by = user_name
+    
+    # Notif auto
+    db.add(models.Notification(id=str(uuid.uuid4()), type="modification", item_type="Ticket", item_name=ticket.subject, user=user_name, role=user_role, date=now, details=f"Ticket '{ticket.subject}' mis à jour par {user_name}", read=False))
+    
+    db.commit()
+    db.refresh(db_ticket)
+    return db_ticket
 
 # --- NOTIFICATIONS ---
 @app.get("/api/notifications")
