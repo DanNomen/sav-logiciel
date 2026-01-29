@@ -20,6 +20,7 @@ import {
     FaSearch,
     FaFilter
 } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 import "./ClientList.css";
 
 function ClientList() {
@@ -40,9 +41,9 @@ function ClientList() {
     const fetchClients = async () => {
         try {
             const [cliRes, sysRes, intRes] = await Promise.all([
-                fetch("http://localhost:8000/api/clients"),
-                fetch("http://localhost:8000/api/systems"),
-                fetch("http://localhost:8000/api/interventions")
+                fetch(`${API_BASE_URL}/api/clients`),
+                fetch(`${API_BASE_URL}/api/systems`),
+                fetch(`${API_BASE_URL}/api/interventions`)
             ]);
 
             if (cliRes.ok && sysRes.ok && intRes.ok) {
@@ -63,7 +64,7 @@ function ClientList() {
         if (!clientId) return;
         if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
             try {
-                const response = await fetch(`http://localhost:8000/api/clients/${clientId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/clients/${clientId}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {

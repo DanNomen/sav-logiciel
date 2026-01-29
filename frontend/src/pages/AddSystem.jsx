@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_BASE_URL from "../api_config";
 import "./AddSystem.css";
 
 function AddSystem() {
@@ -47,7 +48,7 @@ function AddSystem() {
 
     const fetchClients = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/clients");
+            const response = await fetch(`${API_BASE_URL}/api/clients`);
             if (response.ok) {
                 const data = await response.json();
                 setClients(data);
@@ -70,8 +71,8 @@ function AddSystem() {
         try {
             const isEdit = !!editData?.id;
             const url = isEdit
-                ? `http://localhost:8000/api/systems/${editData.id}`
-                : "http://localhost:8000/api/systems";
+                ? `${API_BASE_URL}/api/systems/${editData.id}`
+                : `${API_BASE_URL}/api/systems`;
             const method = isEdit ? "PUT" : "POST";
 
             const response = await fetch(url, {

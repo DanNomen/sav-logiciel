@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_BASE_URL from "../api_config";
 import "./AddTicket.css";
 
 function AddTicket() {
@@ -38,7 +39,7 @@ function AddTicket() {
 
     const fetchClients = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/clients");
+            const response = await fetch(`${API_BASE_URL}/api/clients`);
             if (response.ok) {
                 const data = await response.json();
                 setClients(data);
@@ -50,7 +51,7 @@ function AddTicket() {
 
     const fetchInterventions = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/interventions");
+            const response = await fetch(`${API_BASE_URL}/api/interventions`);
             if (response.ok) {
                 const data = await response.json();
                 setInterventions(data);
@@ -70,8 +71,8 @@ function AddTicket() {
         try {
             const isEdit = !!editData?.id;
             const url = isEdit
-                ? `http://localhost:8000/api/tickets/${editData.id}`
-                : "http://localhost:8000/api/tickets";
+                ? `${API_BASE_URL}/api/tickets/${editData.id}`
+                : `${API_BASE_URL}/api/tickets`;
             const method = isEdit ? "PUT" : "POST";
 
             const response = await fetch(url, {

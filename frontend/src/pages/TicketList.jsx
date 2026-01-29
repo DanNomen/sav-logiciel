@@ -4,6 +4,7 @@ import {
     FaPlus, FaTicketAlt, FaClock, FaUser, FaCircle,
     FaExclamationCircle, FaEdit, FaTrashAlt, FaPhone, FaLink, FaInfoCircle, FaTimes
 } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 import "./TicketList.css";
 
 function TicketList() {
@@ -31,7 +32,7 @@ function TicketList() {
 
     const fetchTickets = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/tickets");
+            const response = await fetch(`${API_BASE_URL}/api/tickets`);
             if (response.ok) {
                 const data = await response.json();
                 setTickets(data);
@@ -43,7 +44,7 @@ function TicketList() {
 
     const fetchClients = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/clients");
+            const response = await fetch(`${API_BASE_URL}/api/clients`);
             if (response.ok) {
                 const data = await response.json();
                 const cliMap = {};
@@ -57,7 +58,7 @@ function TicketList() {
 
     const fetchInterventions = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/interventions");
+            const response = await fetch(`${API_BASE_URL}/api/interventions`);
             if (response.ok) {
                 const data = await response.json();
                 setAllInterventions(data);
@@ -70,7 +71,7 @@ function TicketList() {
     const handleDelete = async (id) => {
         if (window.confirm("Supprimer ce ticket ?")) {
             try {
-                const response = await fetch(`http://localhost:8000/api/tickets/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/api/tickets/${id}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -103,7 +104,7 @@ function TicketList() {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/tickets/${id}/status`, {
+            const response = await fetch(`${API_BASE_URL}/api/tickets/${id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaBars, FaTimes, FaUser, FaFileAlt, FaCog, FaSignOutAlt, FaCogs, FaTools, FaTicketAlt, FaBell } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "./api_config";
 import "./sidebar.css";
 
 function Sidebar() {
@@ -22,7 +23,7 @@ function Sidebar() {
     // Fetch notifications count
     const fetchNotifCount = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/notifications");
+        const response = await fetch(`${API_BASE_URL}/api/notifications`);
         if (response.ok) {
           const data = await response.json();
           // Count only unread

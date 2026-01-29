@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { FaUser, FaCogs, FaTicketAlt, FaShieldAlt, FaExclamationTriangle, FaClock, FaCalendarAlt } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 
 function Dashboard() {
     const [stats, setStats] = useState({
@@ -29,10 +30,10 @@ function Dashboard() {
         const fetchStats = async () => {
             try {
                 const [cliRes, sysRes, tickRes, intRes] = await Promise.all([
-                    fetch("http://localhost:8000/api/clients"),
-                    fetch("http://localhost:8000/api/systems"),
-                    fetch("http://localhost:8000/api/tickets"),
-                    fetch("http://localhost:8000/api/interventions")
+                    fetch(`${API_BASE_URL}/api/clients`),
+                    fetch(`${API_BASE_URL}/api/systems`),
+                    fetch(`${API_BASE_URL}/api/tickets`),
+                    fetch(`${API_BASE_URL}/api/interventions`)
                 ]);
 
                 if (cliRes.ok && sysRes.ok && tickRes.ok && intRes.ok) {

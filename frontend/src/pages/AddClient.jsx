@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_BASE_URL from "../api_config";
 import "./AddClient.css";
 
 function AddClient() {
@@ -46,8 +47,8 @@ function AddClient() {
       const userRole = currentUser.role || "TECHNICIEN";
 
       const baseUrl = isEdit
-        ? `http://localhost:8000/api/clients/${editData.id}`
-        : "http://localhost:8000/api/clients";
+        ? `${API_BASE_URL}/api/clients/${editData.id}`
+        : `${API_BASE_URL}/api/clients`;
       const url = `${baseUrl}?user_name=${encodeURIComponent(userName)}&user_role=${userRole}`;
       const method = isEdit ? "PUT" : "POST";
 

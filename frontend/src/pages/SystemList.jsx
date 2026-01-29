@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSearch } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 import "./SystemList.css";
 
 function SystemList() {
@@ -21,8 +22,8 @@ function SystemList() {
     const fetchData = async () => {
         try {
             const [sysRes, cliRes] = await Promise.all([
-                fetch("http://localhost:8000/api/systems"),
-                fetch("http://localhost:8000/api/clients")
+                fetch(`${API_BASE_URL}/api/systems`),
+                fetch(`${API_BASE_URL}/api/clients`)
             ]);
 
             if (sysRes.ok && cliRes.ok) {
@@ -43,7 +44,7 @@ function SystemList() {
     const handleDelete = async (id) => {
         if (window.confirm("Supprimer ce système ?")) {
             try {
-                const response = await fetch(`http://localhost:8000/api/systems/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/api/systems/${id}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {

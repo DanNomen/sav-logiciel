@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { AiFillGithub } from "react-icons/ai";
 import { useNavigate } from "react-router-dom"; // <--- Import pour navigation
+import API_BASE_URL from "./api_config";
 import "./Login.css";
 
 function Login() {
@@ -28,7 +29,7 @@ function Login() {
     console.log("REMEMBER ME:", rememberMe);
 
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

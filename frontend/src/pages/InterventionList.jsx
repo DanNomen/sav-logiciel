@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaPlus, FaTools, FaShieldAlt, FaExclamationTriangle, FaCalendarAlt, FaUser, FaTrashAlt, FaEdit, FaFilter, FaTimes, FaInfoCircle } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 import "./InterventionList.css";
 
 function InterventionList() {
@@ -24,10 +25,10 @@ function InterventionList() {
     const fetchData = async () => {
         try {
             const [intRes, cliRes, sysRes, tickRes] = await Promise.all([
-                fetch("http://localhost:8000/api/interventions"),
-                fetch("http://localhost:8000/api/clients"),
-                fetch("http://localhost:8000/api/systems"),
-                fetch("http://localhost:8000/api/tickets")
+                fetch(`${API_BASE_URL}/api/interventions`),
+                fetch(`${API_BASE_URL}/api/clients`),
+                fetch(`${API_BASE_URL}/api/systems`),
+                fetch(`${API_BASE_URL}/api/tickets`)
             ]);
 
             if (intRes.ok && cliRes.ok && sysRes.ok && tickRes.ok) {
@@ -58,7 +59,7 @@ function InterventionList() {
     const handleDelete = async (id) => {
         if (window.confirm("Supprimer cette intervention ?")) {
             try {
-                const response = await fetch(`http://localhost:8000/api/interventions/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/api/interventions/${id}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -84,7 +85,7 @@ function InterventionList() {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/interventions/${id}/status`, {
+            const response = await fetch(`${API_BASE_URL}/api/interventions/${id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })

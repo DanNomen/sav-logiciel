@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaTrashAlt, FaUserShield, FaUserTie } from "react-icons/fa";
+import API_BASE_URL from "../api_config";
 import "./Settings.css";
 
 function Settings() {
@@ -18,7 +19,7 @@ function Settings() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/users");
+            const response = await fetch(`${API_BASE_URL}/api/users`);
             if (response.ok) {
                 const data = await response.json();
                 setUsers(data);
@@ -37,8 +38,8 @@ function Settings() {
         e.preventDefault();
         try {
             const url = editingUserId
-                ? `http://localhost:8000/api/users/${editingUserId}`
-                : "http://localhost:8000/api/users";
+                ? `${API_BASE_URL}/api/users/${editingUserId}`
+                : `${API_BASE_URL}/api/users`;
             const method = editingUserId ? "PUT" : "POST";
 
             const response = await fetch(url, {
@@ -88,7 +89,7 @@ function Settings() {
     const handleDelete = async (userId) => {
         if (window.confirm("Supprimer cet utilisateur ?")) {
             try {
-                const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
                     method: "DELETE"
                 });
                 if (response.ok) {

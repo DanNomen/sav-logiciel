@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_BASE_URL from "../api_config";
 import "./AddIntervention.css";
 
 function AddIntervention() {
@@ -44,7 +45,7 @@ function AddIntervention() {
 
     const fetchClients = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/clients");
+            const response = await fetch(`${API_BASE_URL}/api/clients`);
             if (response.ok) {
                 const data = await response.json();
                 setClients(data);
@@ -56,7 +57,7 @@ function AddIntervention() {
 
     const fetchSystems = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/systems");
+            const response = await fetch(`${API_BASE_URL}/api/systems`);
             if (response.ok) {
                 const data = await response.json();
                 setSystems(data);
@@ -68,7 +69,7 @@ function AddIntervention() {
 
     const fetchTickets = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/tickets");
+            const response = await fetch(`${API_BASE_URL}/api/tickets`);
             if (response.ok) {
                 const data = await response.json();
                 setTickets(data);
@@ -92,8 +93,8 @@ function AddIntervention() {
         try {
             const isEdit = !!editData?.id;
             const url = isEdit
-                ? `http://localhost:8000/api/interventions/${editData.id}`
-                : "http://localhost:8000/api/interventions";
+                ? `${API_BASE_URL}/api/interventions/${editData.id}`
+                : `${API_BASE_URL}/api/interventions`;
             const method = isEdit ? "PUT" : "POST";
 
             const response = await fetch(url, {
