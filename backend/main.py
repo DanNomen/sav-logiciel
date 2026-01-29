@@ -1,8 +1,90 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import contextlib
+from victron_api.api_vrm import collect_installations
 
-app = FastAPI()
+import uuid
+
+def sync_vrm_data():
+    """
+    Fetches installations from VRM and adds them to the SYSTEMS list if they don't exist.
+    """
+    print("Starting VRM Sync...")
+    try:
+        from victron_api.api_vrm import collect_installations
+        vrm_systems = collect_installations()
+        
+        # Access global lists
+        global SYSTEMS, CLIENTS
+        
+        # 1. Ensure Default Client Exists (VRM Import)
+        default_client_id = None
+        default_client_name = "Client VRM"
+        
+        # Check if default client already exists
+        for c in CLIENTS:
+            if c.get("nom") == default_client_name:
+                default_client_id = c.get("id")
+                break
+        
+        # Create it if it doesn't exist
+        if not default_client_id:
+            print(f"Creating default client: {default_client_name}")
+            import datetime
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            default_client_id = str(uuid.uuid4())
+            new_client = {
+                "id": default_client_id,
+                "client": "Particulier",
+                "nom": default_client_name,
+                "telephone": "0000000000",
+                "email": "vrm@example.com",
+                "categorie": "Silver",
+                "localisation": "Inconnu",
+                "technicien": "Non spécifié",
+                "created_at": now,
+                "updated_at": now,
+                "created_by": "System Auto-Sync",
+                "updated_by": "System Auto-Sync",
+                "history": [{"action": "Création Automatique", "date": now, "user": "System"}]
+            }
+            CLIENTS.append(new_client)
+        
+        count = 0
+        for sys_data in vrm_systems:
+            # Check for duplicates based on monitoring_name or victron_site_id
+            # Using victron_site_id is safer if available
+            exists = False
+            for s in SYSTEMS:
+                if s.get("victron_site_id") and s.get("victron_site_id") == sys_data.get("victron_site_id"):
+                    exists = True
+                    break
+            
+            if not exists:
+                sys_data["id"] = str(uuid.uuid4())
+                sys_data["client_id"] = default_client_id  # Link to the default client
+                SYSTEMS.append(sys_data)
+                count += 1
+                
+        print(f"VRM Sync Complete. Added {count} new systems linked to {default_client_name}.")
+        return count
+    except Exception as e:
+        print(f"Error during VRM Sync: {e}")
+        import traceback
+        traceback.print_exc()
+        return 0
+
+@contextlib.asynccontextmanager
+async def lifeguard(app: FastAPI):
+    # Startup logic
+    print("Application startup: Syncing with VRM...")
+    sync_vrm_data()
+    yield
+    # Shutdown logic (optional)
+    pass
+
+app = FastAPI(lifespan=lifeguard)
 
 # Add CORS middleware
 app.add_middleware(
@@ -26,6 +108,7 @@ USERS = [
     {"id": "2", "email": "tech@example.com", "password": "tech", "role": "TECHNICIEN", "full_name": "Technicien Test"},
     {"id": "3", "email": "test@example.com", "password": "123456", "role": "ADMIN", "full_name": "Utilisateur Test (Admin)"}
 ]
+
 
 @app.get("/")
 def root():
@@ -241,6 +324,11 @@ def update_system(system_id: str, system: System):
             SYSTEMS[i] = updated_data
             return {"message": "System updated", "system": updated_data}
     raise HTTPException(status_code=404, detail="System not found")
+
+@app.post("/api/systems/sync")
+def sync_systems_endpoint():
+    count = sync_vrm_data()
+    return {"message": f"Sync successful. {count} new systems added.", "total_systems": len(SYSTEMS)}
 
 class Intervention(BaseModel):
     id: str | None = None
