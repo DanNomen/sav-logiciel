@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSync } from "react-icons/fa";
 import "./SystemList.css";
 
 function SystemList() {
@@ -8,6 +8,7 @@ function SystemList() {
     const [clients, setClients] = useState({});
     const [selectedSystem, setSelectedSystem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -36,6 +37,27 @@ function SystemList() {
             }
         } catch (error) {
             console.error("Error fetching systems/clients:", error);
+        }
+    };
+
+    const handleSyncVRM = async () => {
+        setIsSyncing(true);
+        try {
+            const response = await fetch("http://localhost:8000/api/systems/sync", {
+                method: "POST"
+            });
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message);
+                fetchData(); // Refresh list to show new systems
+            } else {
+                alert("Erreur lors de la synchronisation VRM.");
+            }
+        } catch (error) {
+            console.error("Sync error:", error);
+            alert("Erreur de connexion au serveur.");
+        } finally {
+            setIsSyncing(false);
         }
     };
 
@@ -91,9 +113,20 @@ function SystemList() {
                         </div>
                     )}
                 </div>
-                <button className="new-system-btn" onClick={() => navigate("/add-system")}>
-                    <FaPlus size={20} /> Nouveau Système
-                </button>
+                <div className="header-actions" style={{ display: 'flex', gap: '1rem' }}>
+                    <button
+                        className="new-system-btn"
+                        onClick={handleSyncVRM}
+                        style={{ background: isSyncing ? '#4b5563' : 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
+                        disabled={isSyncing}
+                    >
+                        <FaSync size={20} className={isSyncing ? "fa-spin" : ""} />
+                        {isSyncing ? "Synchronisation..." : "Synchroniser VRM"}
+                    </button>
+                    <button className="new-system-btn" onClick={() => navigate("/add-system")}>
+                        <FaPlus size={20} /> Nouveau Système
+                    </button>
+                </div>
             </div>
 
             <div className="system-grid">
