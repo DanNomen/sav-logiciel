@@ -29,6 +29,7 @@ def create_default_admin():
         admin_exists = db.query(models.User).filter(models.User.email == "admin@example.com").first()
         if not admin_exists:
             new_admin = models.User(
+                id=str(uuid.uuid4()),
                 email="admin@example.com",
                 password="admin", # En prod, vous devriez hacher le mot de passe
                 role="ADMIN",
