@@ -81,8 +81,6 @@ class Intervention(Base):
     updated_at = Column(String, nullable=True)
     created_by = Column(String, nullable=True)
     updated_by = Column(String, nullable=True)
-    material_changed = Column(Text, nullable=True)
-    images = Column(JSON, default=[])
 
 class Ticket(Base):
     __tablename__ = "tickets"

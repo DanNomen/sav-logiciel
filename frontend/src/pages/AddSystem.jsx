@@ -78,7 +78,7 @@ function AddSystem() {
                 ? `${API_BASE_URL}/api/systems/${editData.id}`
                 : `${API_BASE_URL}/api/systems`;
 
-            const url = `${baseUrl}?user_name=${encodeURIComponent(userName)}&user_role=${userRole}`;
+            const url = `${baseUrl}?user_name=${encodeURIComponent(userName || "Inconnu")}&user_role=${encodeURIComponent(userRole || "TECHNICIEN")}`;
             const method = isEdit ? "PUT" : "POST";
 
             const response = await fetch(url, {
