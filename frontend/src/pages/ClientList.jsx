@@ -80,6 +80,9 @@ function ClientList() {
                         setIsModalOpen(false);
                         setSelectedClient(null);
                     }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    alert(`Erreur lors de la suppression : ${errorData.detail || "Le serveur a refusé la demande."}`);
                 }
             } catch (error) {
                 console.error("Error deleting client:", error);

@@ -208,9 +208,19 @@ def create_client(client: ClientBase, db: Session = Depends(get_db), user_name: 
 
 @app.delete("/api/clients/{client_id}")
 def delete_client(client_id: str, db: Session = Depends(get_db)):
-    db.query(models.Client).filter(models.Client.id == client_id).delete()
-    db.commit()
-    return {"message": "Supprimé"}
+    try:
+        # Suppression manuelle des dépendances pour PostgreSQL (évite les erreurs de clé étrangère)
+        db.query(models.Intervention).filter(models.Intervention.client_id == client_id).delete()
+        db.query(models.System).filter(models.System.client_id == client_id).delete()
+        db.query(models.Ticket).filter(models.Ticket.client_id == client_id).delete()
+        
+        db.query(models.Client).filter(models.Client.id == client_id).delete()
+        db.commit()
+        return {"message": "Client et toutes ses données liées ont été supprimés"}
+    except Exception as e:
+        db.rollback()
+        print(f"Erreur delete_client: {e}")
+        raise HTTPException(status_code=500, detail=f"Impossible de supprimer le client : {str(e)}")
 
 @app.put("/api/clients/{client_id}")
 def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
@@ -288,6 +298,23 @@ def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_
         print(f"Erreur update_system: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.delete("/api/systems/{system_id}")
+def delete_system(system_id: str, db: Session = Depends(get_db)):
+    try:
+        # Suppression des interventions liées
+        db.query(models.Intervention).filter(models.Intervention.system_id == system_id).delete()
+        db.query(models.System).filter(models.System.id == system_id).delete()
+        db.commit()
+        return {"message": "Systeme supprimé avec succès"}
+    except Exception as e:
+        db.rollback()
+        print(f"Erreur delete_system: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        db.rollback()
+        print(f"Erreur update_system: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- INTERVENTIONS ---
 @app.get("/api/interventions")
 def get_interventions(db: Session = Depends(get_db)):
@@ -340,6 +367,32 @@ def update_intervention(intervention_id: str, intervention: InterventionBase, db
         print(f"Erreur update_intervention: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.delete("/api/interventions/{intervention_id}")
+def delete_intervention(intervention_id: str, db: Session = Depends(get_db)):
+    try:
+        db.query(models.Intervention).filter(models.Intervention.id == intervention_id).delete()
+        db.commit()
+        return {"message": "Intervention supprimée"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.patch("/api/interventions/{intervention_id}/status")
+def update_intervention_status(intervention_id: str, request: dict, db: Session = Depends(get_db)):
+    try:
+        db_int = db.query(models.Intervention).filter(models.Intervention.id == intervention_id).first()
+        if not db_int:
+            raise HTTPException(status_code=404, detail="Intervention non trouvée")
+        
+        db_int.status = request.get("status")
+        db_int.updated_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.commit()
+        return {"message": "Statut mis à jour"}
+    except Exception as e:
+        db.rollback()
+        print(f"Erreur update_intervention_status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- TICKETS ---
 @app.get("/api/tickets")
 def get_tickets(db: Session = Depends(get_db)):
@@ -385,6 +438,32 @@ def update_ticket(ticket_id: str, ticket: TicketBase, db: Session = Depends(get_
     except Exception as e:
         db.rollback()
         print(f"Erreur update_ticket: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/tickets/{ticket_id}")
+def delete_ticket(ticket_id: str, db: Session = Depends(get_db)):
+    try:
+        db.query(models.Ticket).filter(models.Ticket.id == ticket_id).delete()
+        db.commit()
+        return {"message": "Ticket supprimé"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.patch("/api/tickets/{ticket_id}/status")
+def update_ticket_status(ticket_id: str, request: dict, db: Session = Depends(get_db)):
+    try:
+        db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+        if not db_ticket:
+            raise HTTPException(status_code=404, detail="Ticket non trouvé")
+        
+        db_ticket.status = request.get("status")
+        db_ticket.updated_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.commit()
+        return {"message": "Statut mis à jour"}
+    except Exception as e:
+        db.rollback()
+        print(f"Erreur update_ticket_status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- NOTIFICATIONS ---
