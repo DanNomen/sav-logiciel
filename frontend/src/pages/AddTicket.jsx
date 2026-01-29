@@ -81,6 +81,8 @@ function AddTicket() {
             const url = `${baseUrl}?user_name=${encodeURIComponent(userName || "Inconnu")}&user_role=${encodeURIComponent(userRole || "TECHNICIEN")}`;
             const method = isEdit ? "PUT" : "POST";
 
+            console.log("DEBUG: Sending ticket data:", formData);
+
             const response = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
