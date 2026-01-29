@@ -186,6 +186,23 @@ def delete_client(client_id: str, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Supprimé"}
 
+@app.put("/api/clients/{client_id}")
+def update_client(client_id: str, client: ClientBase, db: Session = Depends(get_db)):
+    db_client = db.query(models.Client).filter(models.Client.id == client_id).first()
+    if not db_client:
+        raise HTTPException(status_code=404, detail="Client non trouvé")
+    
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    update_data = client.model_dump()
+    
+    for key, value in update_data.items():
+        setattr(db_client, key, value)
+    
+    db_client.updated_at = now
+    db.commit()
+    db.refresh(db_client)
+    return db_client
+
 # --- SYSTÈMES ---
 @app.get("/api/systems")
 def get_systems(db: Session = Depends(get_db)):
@@ -197,6 +214,19 @@ def create_system(system: SystemBase, db: Session = Depends(get_db)):
     db.add(new_sys)
     db.commit()
     return new_sys
+
+@app.put("/api/systems/{system_id}")
+def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_db)):
+    db_system = db.query(models.System).filter(models.System.id == system_id).first()
+    if not db_system:
+        raise HTTPException(status_code=404, detail="Système non trouvé")
+    
+    for key, value in system.model_dump().items():
+        setattr(db_system, key, value)
+    
+    db.commit()
+    db.refresh(db_system)
+    return db_system
 
 # --- INTERVENTIONS ---
 @app.get("/api/interventions")
