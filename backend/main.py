@@ -241,6 +241,7 @@ def get_systems(db: Session = Depends(get_db)):
 def create_system(system: SystemBase, db: Session = Depends(get_db), user_name: str = Query("Systeme"), user_role: str = Query("TECHNICIEN")):
     try:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"DEBUG RECEIVED DATA (POST): {system.model_dump()}")
         new_sys = models.System(**system.model_dump(), id=str(uuid.uuid4()), created_at=now, updated_at=now, created_by=user_name)
         
         # Notif auto
@@ -262,6 +263,7 @@ def update_system(system_id: str, system: SystemBase, db: Session = Depends(get_
             raise HTTPException(status_code=404, detail="Systeme non trouve")
         
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"DEBUG RECEIVED DATA (PUT): {system.model_dump()}")
         for key, value in system.model_dump().items():
             setattr(db_system, key, value)
         

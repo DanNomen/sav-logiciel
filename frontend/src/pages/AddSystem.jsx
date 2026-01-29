@@ -42,7 +42,14 @@ function AddSystem() {
     useEffect(() => {
         fetchClients();
         if (editData) {
-            setFormData(editData);
+            // Remplissage robuste pour éviter les champs null qui "vident" les inputs
+            const safeData = { ...formData };
+            Object.keys(formData).forEach(key => {
+                if (editData[key] !== undefined && editData[key] !== null) {
+                    safeData[key] = editData[key];
+                }
+            });
+            setFormData(safeData);
         }
     }, [editData]);
 
@@ -87,6 +94,8 @@ function AddSystem() {
 
             const url = `${baseUrl}?user_name=${encodeURIComponent(userName || "Inconnu")}&user_role=${encodeURIComponent(userRole || "TECHNICIEN")}`;
             const method = isEdit ? "PUT" : "POST";
+
+            console.log("DEBUG: Sending system data to API:", formData);
 
             const response = await fetch(url, {
                 method: method,
