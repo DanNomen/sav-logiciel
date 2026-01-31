@@ -6,3 +6,7 @@ python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
 psycopg2-binary
+requests
+python-dotenv
+websockets
+

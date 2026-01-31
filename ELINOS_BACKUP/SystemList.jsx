@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSearch, FaSync } from "react-icons/fa";
-import API_BASE_URL from "../api_config";
+import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSync } from "react-icons/fa";
 import "./SystemList.css";
 
 function SystemList() {
@@ -9,10 +8,8 @@ function SystemList() {
     const [clients, setClients] = useState({});
     const [selectedSystem, setSelectedSystem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [searchTerm, setSearchTerm] = useState("");
     const [isSyncing, setIsSyncing] = useState(false);
-    const [syncTime, setSyncTime] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const clientIdFilter = searchParams.get("clientId");
@@ -24,8 +21,8 @@ function SystemList() {
     const fetchData = async () => {
         try {
             const [sysRes, cliRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/api/systems`),
-                fetch(`${API_BASE_URL}/api/clients`)
+                fetch("http://localhost:8000/api/systems"),
+                fetch("http://localhost:8000/api/clients")
             ]);
 
             if (sysRes.ok && cliRes.ok) {
@@ -45,22 +42,14 @@ function SystemList() {
 
     const handleSyncVRM = async () => {
         setIsSyncing(true);
-        setSyncTime(0);
-
-        // Start timer
-        const timerInterval = setInterval(() => {
-            setSyncTime(prev => prev + 1);
-        }, 1000);
-
         try {
-            const response = await fetch(`${API_BASE_URL}/api/systems/sync`, {
+            const response = await fetch("http://localhost:8000/api/systems/sync", {
                 method: "POST"
             });
             if (response.ok) {
                 const data = await response.json();
                 alert(data.message);
-                // Refresh after a short delay to allow background sync to start
-                setTimeout(fetchData, 3000);
+                fetchData(); // Refresh list to show new systems
             } else {
                 alert("Erreur lors de la synchronisation VRM.");
             }
@@ -68,16 +57,14 @@ function SystemList() {
             console.error("Sync error:", error);
             alert("Erreur de connexion au serveur.");
         } finally {
-            clearInterval(timerInterval);
             setIsSyncing(false);
-            setSyncTime(0);
         }
     };
 
     const handleDelete = async (id) => {
         if (window.confirm("Supprimer ce système ?")) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/systems/${id}`, {
+                const response = await fetch(`http://localhost:8000/api/systems/${id}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -93,12 +80,9 @@ function SystemList() {
         navigate("/add-system", { state: { system } });
     };
 
-    const filteredSystems = systems.filter(s => {
-        const matchesClient = !clientIdFilter || s.client_id === clientIdFilter;
-        const matchesSearch = (s.monitoring_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (clients[s.client_id]?.nom || "").toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesClient && matchesSearch;
-    });
+    const filteredSystems = clientIdFilter
+        ? systems.filter(s => s.client_id === clientIdFilter)
+        : systems;
 
     const clearFilter = () => {
         setSearchParams({});
@@ -129,40 +113,15 @@ function SystemList() {
                         </div>
                     )}
                 </div>
-
-                <div className="header-search-box">
-                    <FaSearch className="search-icon" />
-                    <input
-                        type="text"
-                        placeholder="Rechercher un système ou un client..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-
                 <div className="header-actions" style={{ display: 'flex', gap: '1rem' }}>
                     <button
-                        className="sync-vrm-btn"
+                        className="new-system-btn"
                         onClick={handleSyncVRM}
+                        style={{ background: isSyncing ? '#4b5563' : 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
                         disabled={isSyncing}
-                        style={{
-                            background: isSyncing ? '#4b5563' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.6rem 1.2rem',
-                            borderRadius: '12px',
-                            fontWeight: '700',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            cursor: isSyncing ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s',
-                            minWidth: '180px',
-                            justifyContent: 'center'
-                        }}
                     >
-                        <FaSync className={isSyncing ? "fa-spin" : ""} />
-                        {isSyncing ? `Sync... (${syncTime}s)` : "Synchroniser VRM"}
+                        <FaSync size={20} className={isSyncing ? "fa-spin" : ""} />
+                        {isSyncing ? "Synchronisation..." : "Synchroniser VRM"}
                     </button>
                     <button className="new-system-btn" onClick={() => navigate("/add-system")}>
                         <FaPlus size={20} /> Nouveau Système
@@ -291,10 +250,6 @@ function SystemList() {
                                     <div className="detail-item">
                                         <label>Batteries</label>
                                         <p>{selectedSystem.battery_type || "N/A"} ({selectedSystem.battery_count || 0})</p>
-                                    </div>
-                                    <div className="detail-item">
-                                        <label>Régulateurs Solaires</label>
-                                        <p>{selectedSystem.solar_regulator_type || "N/A"} ({selectedSystem.solar_regulator_count || 0})</p>
                                     </div>
                                 </div>
                             </div>

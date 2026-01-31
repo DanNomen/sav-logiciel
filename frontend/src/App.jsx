@@ -11,8 +11,15 @@ import InterventionList from "./pages/InterventionList";
 import AddIntervention from "./pages/AddIntervention";
 import TicketList from "./pages/TicketList";
 import AddTicket from "./pages/AddTicket";
+import InvoiceList from "./pages/InvoiceList";
+import AddInvoice from "./pages/AddInvoice";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
+import ViewInvoice from "./pages/ViewInvoice";
+import Messages from "./pages/Messages";
+import Planning from "./pages/Planning";
+import KnowledgeBase from "./pages/KnowledgeBase";
+
 
 import Background from "./components/Background";
 
@@ -103,6 +110,38 @@ function App() {
           }
         />
         <Route
+          path="/invoices"
+          element={
+            <Layout>
+              <InvoiceList />
+            </Layout>
+          }
+        />
+        <Route
+          path="/invoices/:id"
+          element={
+            <Layout>
+              <ViewInvoice />
+            </Layout>
+          }
+        />
+        <Route
+          path="/add-invoice"
+          element={
+            <Layout>
+              <AddInvoice />
+            </Layout>
+          }
+        />
+        <Route
+          path="/edit-invoice/:id"
+          element={
+            <Layout>
+              <AddInvoice />
+            </Layout>
+          }
+        />
+        <Route
           path="/settings"
           element={
             <Layout>
@@ -115,6 +154,30 @@ function App() {
           element={
             <Layout>
               <Notifications />
+            </Layout>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <Layout>
+              <Messages />
+            </Layout>
+          }
+        />
+        <Route
+          path="/planning"
+          element={
+            <Layout>
+              <Planning />
+            </Layout>
+          }
+        />
+        <Route
+          path="/knowledge-base"
+          element={
+            <Layout>
+              <KnowledgeBase />
             </Layout>
           }
         />

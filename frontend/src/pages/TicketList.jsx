@@ -13,6 +13,9 @@ function TicketList() {
     const [allInterventions, setAllInterventions] = useState([]);
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [viewMode, setViewMode] = useState("kanban"); // "list" or "kanban"
+    const [draggedTicket, setDraggedTicket] = useState(null);
+
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const statusFilter = searchParams.get("status");
@@ -118,6 +121,28 @@ function TicketList() {
         }
     };
 
+    const handleDragStart = (ticket) => {
+        setDraggedTicket(ticket);
+    };
+
+    const handleDrop = async (newStatus) => {
+        if (!draggedTicket) return;
+        if (draggedTicket.status === newStatus) return;
+
+        // Optimistic update
+        setTickets(tickets.map(t => t.id === draggedTicket.id ? { ...t, status: newStatus } : t));
+
+        try {
+            await handleStatusChange(draggedTicket.id, newStatus);
+        } catch (err) {
+            console.error(err);
+            // Revert on error
+            fetchTickets();
+        }
+        setDraggedTicket(null);
+    };
+
+
     const StatusSelector = ({ id, currentStatus }) => {
         const statuses = ["Ouvert", "En Attente", "Fermé"];
         const color = getStatusColor(currentStatus);
@@ -152,72 +177,139 @@ function TicketList() {
         <div className="ticket-list-container">
             <div className="ticket-list-header">
                 <h1>Gestion des Tickets</h1>
-                <button className="new-ticket-btn" onClick={() => navigate("/add-ticket")}>
-                    <FaPlus /> Nouveau Ticket
-                </button>
+                <div className="header-actions-group">
+                    <div className="view-toggle">
+                        <button
+                            className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                            onClick={() => setViewMode('list')}
+                            title="Vue Liste"
+                        >
+                            <FaPlus style={{ transform: 'rotate(45deg)' }} /> Liste {/* Placeholder icon reuse */}
+                        </button>
+                        <button
+                            className={`view-btn ${viewMode === 'kanban' ? 'active' : ''}`}
+                            onClick={() => setViewMode('kanban')}
+                            title="Vue Tableau"
+                        >
+                            <FaTicketAlt /> Tableau
+                        </button>
+                    </div>
+                    <button className="new-ticket-btn" onClick={() => navigate("/add-ticket")}>
+                        <FaPlus /> Nouveau Ticket
+                    </button>
+                </div>
             </div>
 
-            <div className="ticket-grid">
-                {filteredTickets.length === 0 ? (
-                    <div className="no-tickets">
-                        <FaTicketAlt size={48} />
-                        <p>{user.role === "ADMIN" ? "Aucun ticket ouvert." : "Aucun ticket assigné."}</p>
-                    </div>
-                ) : (
-                    filteredTickets.map((ticket) => (
-                        <div key={ticket.id} className="ticket-card">
-                            <div className="priority-line" style={{ backgroundColor: getPriorityColor(ticket.priority) }}></div>
 
-                            <div className="ticket-card-header">
-                                <div>
-                                    <div className="ticket-header-top">
-                                        <StatusSelector id={ticket.id} currentStatus={ticket.status} />
-                                        <div className="ticket-number-pill">#{ticket.ticket_number}</div>
+            {viewMode === "list" ? (
+                <div className="ticket-grid">
+                    {filteredTickets.length === 0 ? (
+                        <div className="no-tickets">
+                            <FaTicketAlt size={48} />
+                            <p>{user.role === "ADMIN" ? "Aucun ticket ouvert." : "Aucun ticket assigné."}</p>
+                        </div>
+                    ) : (
+                        filteredTickets.map((ticket) => (
+                            <div key={ticket.id} className="ticket-card">
+                                {/* Existing card content... simplified for brevity in insertion, reusing the render logic would be better but I'll stick to replacing the block */}
+                                <div className="priority-line" style={{ backgroundColor: getPriorityColor(ticket.priority) }}></div>
+
+                                <div className="ticket-card-header">
+                                    <div>
+                                        <div className="ticket-header-top">
+                                            <StatusSelector id={ticket.id} currentStatus={ticket.status} />
+                                            <div className="ticket-number-pill">#{ticket.ticket_number}</div>
+                                        </div>
+                                        <h3 title={ticket.subject}>{ticket.subject}</h3>
                                     </div>
-                                    <h3 title={ticket.subject}>{ticket.subject}</h3>
+                                    <div className="ticket-priority-tag" style={{ background: `${getPriorityColor(ticket.priority)}20`, color: getPriorityColor(ticket.priority) }}>
+                                        {ticket.priority}
+                                    </div>
                                 </div>
-                                <div className="ticket-priority-tag" style={{ background: `${getPriorityColor(ticket.priority)}20`, color: getPriorityColor(ticket.priority) }}>
-                                    {ticket.priority}
-                                </div>
-                            </div>
 
-                            <div className="ticket-card-body">
-                                <div className="ticket-info-row">
-                                    <FaUser size={14} />
-                                    <span>{clients[ticket.client_id]?.nom || "Client inconnu"}</span>
+                                <div className="ticket-card-body">
+                                    <div className="ticket-info-row">
+                                        <FaUser size={14} />
+                                        <span>{clients[ticket.client_id]?.nom || "Client inconnu"}</span>
+                                    </div>
+                                    <div className="ticket-info-row">
+                                        <FaClock size={14} />
+                                        <span>Le: {ticket.request_date} | Limite: {ticket.deadline_date || "N/A"}</span>
+                                    </div>
+                                    <div className="ticket-info-row">
+                                        <FaUser size={14} />
+                                        <span>Assigné: {ticket.assigned_to || "Non assigné"}</span>
+                                    </div>
+                                    <p className="ticket-desc-short">{ticket.description}</p>
                                 </div>
-                                <div className="ticket-info-row">
-                                    <FaClock size={14} />
-                                    <span>Le: {ticket.request_date} | Limite: {ticket.deadline_date || "N/A"}</span>
-                                </div>
-                                <div className="ticket-info-row">
-                                    <FaUser size={14} />
-                                    <span>Assigné: {ticket.assigned_to || "Non assigné"}</span>
-                                </div>
-                                <p className="ticket-desc-short">{ticket.description}</p>
-                            </div>
 
-                            <div className="ticket-card-footer">
-                                <button className="details-btn-text" onClick={() => { setSelectedTicket(ticket); setShowModal(true); }}>
-                                    <FaInfoCircle size={14} /> Détails
-                                </button>
-                                {ticket.status !== "Fermé" && (
-                                    <div className="action-actions">
-                                        <button className="edit-btn-small" onClick={() => navigate("/add-ticket", { state: { ticket } })} title="Modifier">
-                                            <FaEdit size={16} />
-                                        </button>
-                                        {user.role === "ADMIN" && (
-                                            <button className="delete-btn-small" onClick={() => handleDelete(ticket.id)} title="Supprimer">
-                                                <FaTrashAlt size={16} />
+                                <div className="ticket-card-footer">
+                                    <button className="details-btn-text" onClick={() => { setSelectedTicket(ticket); setShowModal(true); }}>
+                                        <FaInfoCircle size={14} /> Détails
+                                    </button>
+                                    {ticket.status !== "Fermé" && (
+                                        <div className="action-actions">
+                                            <button className="edit-btn-small" onClick={() => navigate("/add-ticket", { state: { ticket } })} title="Modifier">
+                                                <FaEdit size={16} />
                                             </button>
-                                        )}
+                                            {user.role === "ADMIN" && (
+                                                <button className="delete-btn-small" onClick={() => handleDelete(ticket.id)} title="Supprimer">
+                                                    <FaTrashAlt size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            ) : (
+                <div className="kanban-board">
+                    {["Ouvert", "En Attente", "Fermé"].map(status => (
+                        <div
+                            key={status}
+                            className="kanban-column"
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={() => handleDrop(status)}
+                        >
+                            <div className="kanban-column-header">
+                                <h3>{status}</h3>
+                                <div className="column-count">
+                                    {filteredTickets.filter(t => t.status === status).length}
+                                </div>
+                            </div>
+                            <div className="kanban-column-content">
+                                {filteredTickets.filter(t => t.status === status).map(ticket => (
+                                    <div
+                                        key={ticket.id}
+                                        className="ticket-card kanban-card"
+                                        draggable
+                                        onDragStart={() => handleDragStart(ticket)}
+                                        onClick={() => { setSelectedTicket(ticket); setShowModal(true); }}
+                                    >
+                                        <div className="priority-line" style={{ backgroundColor: getPriorityColor(ticket.priority) }}></div>
+                                        <div className="kanban-card-top">
+                                            <span className="ticket-id-mini">#{ticket.ticket_number}</span>
+                                            <span className="priority-dot" style={{ backgroundColor: getPriorityColor(ticket.priority) }} title={ticket.priority}></span>
+                                        </div>
+                                        <h4 className="kanban-card-title">{ticket.subject}</h4>
+                                        <div className="kanban-card-footer">
+                                            <span className="client-mini">{clients[ticket.client_id]?.nom || "Inconnu"}</span>
+                                            {ticket.assigned_to && (
+                                                <div className="avatar-circle" title={ticket.assigned_to}>
+                                                    {ticket.assigned_to.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                )}
+                                ))}
                             </div>
                         </div>
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
+
 
             {showModal && selectedTicket && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>

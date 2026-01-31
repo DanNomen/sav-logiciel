@@ -1,0 +1,440 @@
+/* Inspired by TicketList.css - Refined for Premium Look */
+
+.invoice-list-container {
+    padding: 2.5rem;
+    width: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.invoice-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.header-title-area {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.header-title-area h1 {
+    font-size: 3rem;
+    color: white;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.6));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.header-filter-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.header-filter-select {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.6rem 2.5rem 0.6rem 1.2rem;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.5)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    min-width: 180px;
+}
+
+.header-filter-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.header-filter-select option {
+    background: #171717;
+    color: white;
+}
+
+.clear-filter-btn {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.6rem;
+    border-radius: 16px;
+    margin-right: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clear-filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.new-invoice-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.new-invoice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+}
+
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    /* Fond subtil */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 0 1rem;
+    transition: all 0.3s ease;
+    width: 350px;
+    /* Barre plus large pour la recherche */
+}
+
+.search-bar-container:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(99, 102, 241, 0.5);
+    /* Effet violet au focus */
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+}
+
+.header-search-input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.header-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Table View Styles - Glassmorphism */
+.table-responsive {
+    overflow-x: auto;
+    background: rgba(23, 23, 23, 0.6);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
+.invoices-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: white;
+    table-layout: fixed;
+    /* Fige la structure pour éviter les sauts */
+}
+
+.invoices-table th {
+    text-align: left;
+    padding: 1.5rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Largeurs fixes par colonnes pour la stabilité */
+.invoices-table th:nth-child(1) {
+    width: 160px;
+}
+
+/* N° Facture */
+.invoices-table th:nth-child(2) {
+    width: auto;
+}
+
+/* Client (flexible) */
+.invoices-table th:nth-child(3) {
+    width: 130px;
+}
+
+/* Date */
+.invoices-table th:nth-child(4) {
+    width: 130px;
+}
+
+/* Échéance */
+.invoices-table th:nth-child(5) {
+    width: 160px;
+}
+
+/* Montant */
+.invoices-table th:nth-child(6) {
+    width: 170px;
+}
+
+/* Statut */
+.invoices-table th:nth-child(7) {
+    width: 150px;
+}
+
+/* Actions */
+
+.invoices-table td {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    vertical-align: middle;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+    /* Empêche les coupures de ligne par défaut */
+}
+
+/* On gère le nom du client avec des points de suspension si trop long */
+.invoices-table td:nth-child(2) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.invoices-table tr:last-child td {
+    border-bottom: none;
+}
+
+.invoices-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.invoice-number-cell {
+    font-weight: 800;
+    color: #818cf8;
+    background: rgba(129, 140, 241, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.invoice-number-cell.overdue {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.invoice-number-cell.pending {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.invoice-number-container {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.amount-cell {
+    font-weight: 900;
+    font-size: 1.15rem;
+    color: #fff;
+    letter-spacing: -0.5px;
+    min-width: 150px;
+}
+
+
+.overdue-date-cell {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Enhanced Status Select Mini */
+.status-badge-select-mini {
+    padding: 0.5rem 1.2rem;
+    border-radius: 25px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
+    min-width: 140px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.4)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+}
+
+.status-badge-select-mini:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.status-badge-select-mini:disabled {
+    cursor: default;
+    opacity: 0.6;
+    filter: grayscale(0.5);
+    background-image: none;
+    /* Enlève la flèche quand c'est verrouillé */
+    padding-right: 1.2rem;
+    /* Réajuste le padding puisqu'il n'y a plus de flèche */
+}
+
+.status-badge-select-mini option {
+    background: #171717;
+    color: white;
+    padding: 12px;
+}
+
+.status-badge-select-mini.payee {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge-select-mini.attente {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-badge-select-mini.retard {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.status-badge-select-mini.annulee {
+    background-color: rgba(156, 163, 175, 0.1);
+    color: #9ca3af;
+    border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+/* Action Buttons Refinement */
+.table-actions {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.table-action-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.1rem;
+}
+
+.table-action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.table-action-btn.view:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.table-action-btn.edit:hover {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.table-action-btn.delete:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Row Highlight for Overdue */
+.row-overdue td {
+    background: rgba(239, 68, 68, 0.015);
+}
+
+.row-cancelled {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.row-cancelled:hover td {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.no-invoices {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.01);
+    border-radius: 30px;
+}
+
+.no-invoices h3 {
+    margin-top: 1.5rem;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 1024px) {
+    .invoice-list-container {
+        padding: 1.5rem;
+    }
+
+    .header-title-area h1 {
+        font-size: 2.2rem;
+    }
+}

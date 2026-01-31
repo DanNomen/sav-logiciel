@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSearch, FaSync } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrashAlt, FaCogs, FaUser, FaTools, FaFilter, FaTimes, FaInfoCircle, FaFileAlt, FaSearch } from "react-icons/fa";
 import API_BASE_URL from "../api_config";
 import "./SystemList.css";
 
@@ -11,8 +11,6 @@ function SystemList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState("");
-    const [isSyncing, setIsSyncing] = useState(false);
-    const [syncTime, setSyncTime] = useState(0);
     const navigate = useNavigate();
 
     const clientIdFilter = searchParams.get("clientId");
@@ -40,37 +38,6 @@ function SystemList() {
             }
         } catch (error) {
             console.error("Error fetching systems/clients:", error);
-        }
-    };
-
-    const handleSyncVRM = async () => {
-        setIsSyncing(true);
-        setSyncTime(0);
-
-        // Start timer
-        const timerInterval = setInterval(() => {
-            setSyncTime(prev => prev + 1);
-        }, 1000);
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/systems/sync`, {
-                method: "POST"
-            });
-            if (response.ok) {
-                const data = await response.json();
-                alert(data.message);
-                // Refresh after a short delay to allow background sync to start
-                setTimeout(fetchData, 3000);
-            } else {
-                alert("Erreur lors de la synchronisation VRM.");
-            }
-        } catch (error) {
-            console.error("Sync error:", error);
-            alert("Erreur de connexion au serveur.");
-        } finally {
-            clearInterval(timerInterval);
-            setIsSyncing(false);
-            setSyncTime(0);
         }
     };
 
@@ -140,34 +107,9 @@ function SystemList() {
                     />
                 </div>
 
-                <div className="header-actions" style={{ display: 'flex', gap: '1rem' }}>
-                    <button
-                        className="sync-vrm-btn"
-                        onClick={handleSyncVRM}
-                        disabled={isSyncing}
-                        style={{
-                            background: isSyncing ? '#4b5563' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.6rem 1.2rem',
-                            borderRadius: '12px',
-                            fontWeight: '700',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            cursor: isSyncing ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s',
-                            minWidth: '180px',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        <FaSync className={isSyncing ? "fa-spin" : ""} />
-                        {isSyncing ? `Sync... (${syncTime}s)` : "Synchroniser VRM"}
-                    </button>
-                    <button className="new-system-btn" onClick={() => navigate("/add-system")}>
-                        <FaPlus size={20} /> Nouveau Système
-                    </button>
-                </div>
+                <button className="new-system-btn" onClick={() => navigate("/add-system")}>
+                    <FaPlus size={20} /> Nouveau Système
+                </button>
             </div>
 
             <div className="system-grid">

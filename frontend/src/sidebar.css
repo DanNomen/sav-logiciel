@@ -16,16 +16,19 @@
   /* caché */
   width: 250px;
   height: 100%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  /* Darker for better contrast */
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  /* Very subtle line */
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   transition: left 0.3s ease;
   z-index: 1000;
 }
+
 
 .sidebar.open {
   left: 0;
@@ -89,7 +92,23 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar-menu::-webkit-scrollbar {
+  width: 0px;
+  /* Hide scrollbar but keep functional */
+  background: transparent;
+}
+
+.sidebar-menu {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
 }
 
 .sidebar-menu li {
@@ -99,26 +118,41 @@
   font-size: 1rem;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0.5rem 0;
+  /* Add padding for better hit area without moving */
+  transition: opacity 0.2s ease;
 }
 
 .sidebar-menu li:hover {
-  color: #667eea;
-  transform: translateX(5px);
+  opacity: 0.7;
+  /* Use opacity instead of movement */
 }
 
-.logout-item {
+
+.sidebar-footer {
   margin-top: auto;
-  /* Pushes to bottom */
-  color: #ff6b6b;
-  font-weight: bold;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
 }
 
-.logout-item:hover {
-  color: #ff4757 !important;
+.logout-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ff6b6b;
+  font-weight: bold;
+  list-style: none;
 }
+
+.logout-item-btn:hover {
+  color: #ff4757;
+  opacity: 0.8;
+}
+
+
 
 /* ===== OVERLAY ===== */
 .overlay {

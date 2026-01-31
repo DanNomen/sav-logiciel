@@ -7,8 +7,9 @@
     margin-bottom: 2.5rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
 }
+
 
 .dashboard-header h1 {
     font-size: 2.8rem;
@@ -61,6 +62,46 @@
 .date-icon {
     color: #6366f1;
     font-size: 1.2rem;
+}
+
+.weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.weather-widget:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.weather-icon-main {
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.weather-info-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.weather-temp {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+}
+
+.weather-city {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
 }
 
 .stats-grid {
@@ -128,6 +169,21 @@
 .unlinked-ic-card .stat-icon {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+}
+
+.pending-invoices-card .stat-icon {
+    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+}
+
+.overdue-invoices-card .stat-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.paid-invoices-card .stat-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
 .stat-info h3 {

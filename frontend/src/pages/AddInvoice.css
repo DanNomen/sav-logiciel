@@ -1,0 +1,178 @@
+/* Based on AddTicket.css */
+
+.add-invoice-container {
+    padding: 2rem 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+}
+
+.add-invoice-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    width: 100%;
+    max-width: 1000px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.add-invoice-header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.add-invoice-title {
+    font-size: 2.4rem;
+    color: white;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #ffffff 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.add-invoice-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.add-invoice-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.add-invoice-form input,
+.add-invoice-form select,
+.add-invoice-form textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 1rem;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.add-invoice-form input:focus,
+.add-invoice-form select:focus,
+.add-invoice-form textarea:focus {
+    background: #000;
+    border-color: #10b981;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+.form-section-title {
+    color: #10b981;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    display: block;
+}
+
+.items-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.invoice-item-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 0.5fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.add-item-btn {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.8rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.add-item-btn:hover {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.remove-item-btn {
+    background: rgba(239, 68, 68, 0.2);
+    border: none;
+    color: #ef4444;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.8rem;
+}
+
+.remove-item-btn:hover {
+    background: rgba(239, 68, 68, 0.4);
+}
+
+.total-display {
+    text-align: right;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6);
+}

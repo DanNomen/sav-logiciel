@@ -199,7 +199,9 @@ function InterventionList() {
                                 </div>
                                 <div className="info-row">
                                     <FaCalendarAlt size={14} />
-                                    <span>Date: {item.date}</span>
+                                    <span>
+                                        {item.end_date ? `Du ${item.date} au ${item.end_date}` : `Date: ${item.date}`}
+                                    </span>
                                 </div>
                                 <div className="info-row">
                                     <FaUser size={14} />
@@ -281,8 +283,8 @@ function InterventionList() {
                                         <p>{selectedIntervention.technician || selectedIntervention.technicien || "Non spécifié"}</p>
                                     </div>
                                     <div className="detail-item">
-                                        <label>Date</label>
-                                        <p>{selectedIntervention.date}</p>
+                                        <label>Période</label>
+                                        <p>{selectedIntervention.end_date ? `Du ${selectedIntervention.date} au ${selectedIntervention.end_date}` : selectedIntervention.date}</p>
                                     </div>
                                     {selectedIntervention.intervention_number && (
                                         <div className="detail-item">

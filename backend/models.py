@@ -9,6 +9,8 @@ class User(Base):
     password = Column(String)
     role = Column(String)
     full_name = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+
 
 class Client(Base):
     __tablename__ = "clients"
@@ -70,6 +72,8 @@ class Intervention(Base):
     system_id = Column(String, ForeignKey("systems.id"))
     technician = Column(String)
     date = Column(String)
+    end_date = Column(String, nullable=True)
+
     status = Column(String, default="NOUVEAU")
     ticket_id = Column(String, nullable=True)
     observation = Column(Text, nullable=True)
@@ -116,3 +120,55 @@ class Notification(Base):
     date = Column(String)
     details = Column(Text)
     read = Column(Boolean, default=False)
+
+class Invoice(Base):
+    __tablename__ = "invoices"
+    id = Column(String, primary_key=True, index=True)
+    invoice_number = Column(String, unique=True)
+    client_id = Column(String, ForeignKey("clients.id"))
+    system_id = Column(String, ForeignKey("systems.id"), nullable=True)
+    date = Column(String)
+    due_date = Column(String)
+    status = Column(String, default="EN ATTENTE") # EN ATTENTE, PAYEE, RETARD, ANNULEE
+    total_amount = Column(Float, default=0.0)
+    items = Column(JSON, default=[]) # List of {description, qty, price, total}
+    notes = Column(Text, nullable=True)
+    created_at = Column(String, nullable=True)
+    updated_at = Column(String, nullable=True)
+    created_by = Column(String, nullable=True)
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+    id = Column(String, primary_key=True, index=True)
+    sender_id = Column(String)
+    sender_name = Column(String)
+    recipient_id = Column(String, nullable=True) # None = Public
+    content = Column(Text)
+    timestamp = Column(String)
+    read = Column(Boolean, default=False)
+
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String)
+    description = Column(Text, nullable=True)
+    start_date = Column(String)
+    end_date = Column(String)
+    type = Column(String) 
+    user_id = Column(String) 
+    user_name = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+
+    color = Column(String, default="#6366f1")
+    created_at = Column(String)
+
+class KnowledgeArticle(Base):
+    __tablename__ = "knowledge_articles"
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String)
+    content = Column(Text)
+    category = Column(String)
+    tags = Column(String) # Comma separated
+    author_name = Column(String)
+    created_at = Column(String)
+    updated_at = Column(String)

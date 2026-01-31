@@ -29,7 +29,7 @@ function Login() {
     console.log("REMEMBER ME:", rememberMe);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
+      const response = await fetch(`http://localhost:8000/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

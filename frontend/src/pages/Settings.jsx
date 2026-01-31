@@ -10,8 +10,10 @@ function Settings() {
         email: "",
         password: "",
         role: "TECHNICIEN",
-        full_name: ""
+        full_name: "",
+        location: ""
     });
+
 
     useEffect(() => {
         fetchUsers();
@@ -76,14 +78,15 @@ function Settings() {
             email: user.email,
             password: user.password,
             role: user.role,
-            full_name: user.full_name
+            full_name: user.full_name,
+            location: user.location || ""
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const resetForm = () => {
         setEditingUserId(null);
-        setFormData({ email: "", password: "", role: "TECHNICIEN", full_name: "" });
+        setFormData({ email: "", password: "", role: "TECHNICIEN", full_name: "", location: "" });
     };
 
     const handleDelete = async (userId) => {
@@ -134,13 +137,29 @@ function Settings() {
                                 <input type="password" name="password" value={formData.password} onChange={handleChange} required />
                             </div>
                         </div>
-                        <div className="input-group">
-                            <label>Rôle</label>
-                            <select name="role" value={formData.role} onChange={handleChange} required>
-                                <option value="ADMIN">ADMIN (Accès Total)</option>
-                                <option value="TECHNICIEN">TECHNICIEN (Accès Limité)</option>
-                            </select>
+                        <div className="input-row">
+                            <div className="input-group">
+                                <label>Rôle</label>
+                                <select name="role" value={formData.role} onChange={handleChange} required>
+                                    <option value="ADMIN">ADMIN (Accès Total)</option>
+                                    <option value="TECHNICIEN">TECHNICIEN (Accès Limité)</option>
+                                    <option value="FACTURATION">FACTURATION (Accès Dashboard & Factures)</option>
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label>Localisation</label>
+                                <select name="location" value={formData.location} onChange={handleChange} required>
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="Antananarivo">Antananarivo</option>
+                                    <option value="Nosy Be">Nosy Be</option>
+                                    <option value="Tamatave">Tamatave</option>
+                                    <option value="Tulear">Tulear</option>
+                                    <option value="Ambovombe">Ambovombe</option>
+                                    <option value="Fort Dauphin">Fort Dauphin</option>
+                                </select>
+                            </div>
                         </div>
+
                         <div className="form-actions-row">
                             <button type="submit" className="add-user-btn">
                                 {editingUserId ? "Enregistrer les modifications" : "Ajouter l'utilisateur"}
@@ -162,6 +181,7 @@ function Settings() {
                                         <div className="user-details">
                                             <span className="user-name">{u.full_name}</span>
                                             <span className="user-email">{u.email}</span>
+                                            {u.location && <span className="user-location-tag">📍 {u.location}</span>}
                                         </div>
                                     </div>
                                     <div className="user-role-badge" data-role={u.role}>
@@ -200,6 +220,16 @@ function Settings() {
                                 <li>✔ Ajouter des interventions</li>
                                 <li>✔ Photos & Commentaires</li>
                                 <li className="denied">❌ Supprimer des clients</li>
+                                <li className="denied">❌ Accès aux paramètres</li>
+                            </ul>
+                        </div>
+                        <div className="role-perm">
+                            <h4>FACTURATION</h4>
+                            <ul>
+                                <li>✔ Voir le Dashboard</li>
+                                <li>✔ Gestion des Factures (CRUD)</li>
+                                <li className="denied">❌ Accès aux Clients/Systèmes</li>
+                                <li className="denied">❌ Accès aux Interventions/Tickets</li>
                                 <li className="denied">❌ Accès aux paramètres</li>
                             </ul>
                         </div>

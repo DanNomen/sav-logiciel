@@ -21,7 +21,9 @@ function AddIntervention() {
         system_id: initialSystemId,
         technician: "",
         date: new Date().toISOString().split('T')[0],
+        end_date: "",
         status: "NOUVEAU",
+
         ticket_id: "",
         observation: "",
         context: "",
@@ -173,9 +175,17 @@ function AddIntervention() {
                         </label>
 
                         <label>
-                            Date
+                            Date de début
                             <input type="date" name="date" value={formData.date} onChange={handleChange} required />
                         </label>
+
+                        {formData.type === "preventive" && (
+                            <label>
+                                Date de fin (optionnel)
+                                <input type="date" name="end_date" value={formData.end_date || ""} onChange={handleChange} />
+                            </label>
+                        )}
+
 
                         <label>
                             Statut actuel

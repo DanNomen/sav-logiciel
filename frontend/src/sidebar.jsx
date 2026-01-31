@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaUser, FaFileAlt, FaCog, FaSignOutAlt, FaCogs, FaTools, FaTicketAlt, FaBell } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser, FaFileAlt, FaCog, FaSignOutAlt, FaCogs, FaTools, FaTicketAlt, FaBell, FaComments, FaCalendarAlt, FaChartPie, FaBook } from "react-icons/fa";
+
+
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "./api_config";
 import "./sidebar.css";
@@ -16,6 +18,8 @@ function Sidebar() {
     setIsOpen(!isOpen);
   };
 
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
   useEffect(() => {
     const handleUpdate = () => {
       setUser(JSON.parse(localStorage.getItem("user") || "{}"));
@@ -28,24 +32,44 @@ function Sidebar() {
         const response = await fetch(`${API_BASE_URL}/api/notifications`);
         if (response.ok) {
           const data = await response.json();
-          // Count only unread
           const unread = data.filter(n => !n.read).length;
           setNotifCount(unread);
         }
       } catch (err) { }
     };
 
+    // Fetch unread messages count
+    const fetchUnreadMessages = async () => {
+      if (!user.id) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/messages?user_id=${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          // Count messages where I am recipient and read is false
+          const unread = data.filter(m => m.recipient_id === user.id && !m.read).length;
+          setUnreadMsgCount(unread);
+        }
+      } catch (err) { }
+    };
+
     fetchNotifCount();
-    const interval = setInterval(fetchNotifCount, 10000); // refresh every 10s
+    fetchUnreadMessages();
+
+    // Interval for both
+    const interval = setInterval(() => {
+      fetchNotifCount();
+      fetchUnreadMessages();
+    }, 10000);
 
     window.addEventListener("notificationsUpdated", fetchNotifCount);
+    // On peut aussi écouter un événement custom pour le chat si besoin
 
     return () => {
       window.removeEventListener("userUpdated", handleUpdate);
       window.removeEventListener("notificationsUpdated", fetchNotifCount);
       clearInterval(interval);
     };
-  }, []);
+  }, [user.id]);
 
   const handleLogoutClick = () => {
     const now = new Date();
@@ -87,20 +111,38 @@ function Sidebar() {
 
         <ul className="sidebar-menu">
           <li onClick={() => { navigate("/dashboard"); toggleSidebar(); }}>
-            <FaUser /> <span>Dashboard</span>
+            <FaChartPie /> <span>Tableau de Bord</span>
           </li>
-          <li onClick={() => { navigate("/clients"); toggleSidebar(); }}>
-            <FaFileAlt /> <span>Clients</span>
+          <li onClick={() => { navigate("/planning"); toggleSidebar(); }}>
+            <FaCalendarAlt /> <span>Planning</span>
           </li>
-          <li onClick={() => { navigate("/systems"); toggleSidebar(); }}>
-            <FaCogs /> <span>Liste Systèmes</span>
+          {user.role !== "FACTURATION" && (
+            <>
+              <li onClick={() => { navigate("/clients"); toggleSidebar(); }}>
+                <FaFileAlt /> <span>Clients</span>
+              </li>
+              <li onClick={() => { navigate("/systems"); toggleSidebar(); }}>
+                <FaCogs /> <span>Liste Systèmes</span>
+              </li>
+              <li onClick={() => { navigate("/interventions"); toggleSidebar(); }}>
+                <FaTools /> <span>Interventions</span>
+              </li>
+              <li onClick={() => { navigate("/tickets"); toggleSidebar(); }}>
+                <FaTicketAlt /> <span>Tickets</span>
+              </li>
+            </>
+          )}
+          <li onClick={() => { navigate("/invoices"); toggleSidebar(); }}>
+            <FaFileAlt /> <span>Facturation</span>
           </li>
-          <li onClick={() => { navigate("/interventions"); toggleSidebar(); }}>
-            <FaTools /> <span>Interventions</span>
+          <li onClick={() => { navigate("/messages"); toggleSidebar(); }} className="notif-menu-item">
+            <FaComments /> <span>Messages</span>
+            {unreadMsgCount > 0 && <span className="notif-badge">{unreadMsgCount}</span>}
           </li>
-          <li onClick={() => { navigate("/tickets"); toggleSidebar(); }}>
-            <FaTicketAlt /> <span>Tickets</span>
+          <li onClick={() => { navigate("/knowledge-base"); toggleSidebar(); }}>
+            <FaBook /> <span>Base Connaissance</span>
           </li>
+
           {user.role === "ADMIN" && (
             <>
               <li onClick={() => { navigate("/notifications"); toggleSidebar(); }} className="notif-menu-item">
@@ -113,11 +155,14 @@ function Sidebar() {
             </>
           )}
 
-          <li className="logout-item" onClick={handleLogoutClick}>
+        </ul>
+
+        <div className="sidebar-footer">
+          <li className="logout-item-btn" onClick={handleLogoutClick}>
             <FaSignOutAlt /> <span>Déconnexion</span>
           </li>
           <div className="sidebar-version">V-2026-29-0001</div>
-        </ul>
+        </div>
       </div>
 
       {showLogoutModal && (

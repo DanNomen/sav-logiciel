@@ -1,0 +1,297 @@
+.knowledge-container {
+    padding: 2.5rem;
+    width: 100%;
+}
+
+.knowledge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.knowledge-header h1 {
+    font-size: 2.2rem;
+    color: white;
+    font-weight: 800;
+}
+
+.add-article-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.6rem;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.add-article-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+}
+
+.search-bar-knowledge {
+    position: relative;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+.search-bar-knowledge input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem 1rem 1rem 3rem;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar-knowledge input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.article-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1.8rem;
+    color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.article-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    align-self: flex-start;
+}
+
+.article-card h3 {
+    font-size: 1.3rem;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.article-preview {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.tag-pill {
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+}
+
+/* Modal Reading */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 2rem;
+}
+
+.article-modal-content {
+    background: #1e1e2e;
+    width: 100%;
+    max-width: 900px;
+    max-height: 85vh;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-modal-header {
+    padding: 2rem 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.article-header-info h2 {
+    margin: 0.5rem 0 1rem 0;
+    font-size: 2rem;
+    color: white;
+}
+
+.article-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.article-modal-body {
+    padding: 2.5rem;
+    overflow-y: auto;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.article-modal-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.edit-article-btn,
+.delete-article-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-article-btn:hover {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: black;
+}
+
+.delete-article-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: white;
+}
+
+/* Editor Form */
+.editor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.editor-form input,
+.editor-form textarea,
+.editor-form select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+.editor-form textarea {
+    min-height: 300px;
+    resize: vertical;
+}
+
+.tags-input-help {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: -1rem;
+}
+
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancel-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
