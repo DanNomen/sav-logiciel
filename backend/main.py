@@ -1111,7 +1111,7 @@ async def ai_chat(request: dict):
     """
     
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash-latest')
         response = await asyncio.to_thread(model.generate_content, prompt)
         return {"content": response.text}
     except Exception as e:
