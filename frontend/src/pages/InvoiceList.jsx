@@ -204,7 +204,7 @@ function InvoiceList() {
                                                     </button>
                                                 )}
 
-                                                {inv.status !== 'PAYEE' && inv.status !== 'ANNULEE' && (
+                                                {inv.status !== 'ANNULEE' && (
                                                     <button className="table-action-btn delete" title="Supprimer" onClick={() => handleDelete(inv.id)}>
                                                         <FaTrashAlt />
                                                     </button>
