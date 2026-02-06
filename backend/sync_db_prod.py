@@ -1,16 +1,18 @@
 import models
 from database import engine, Base
 from sqlalchemy import inspect, text
+import logging
+logger = logging.getLogger(__name__)
 
 def sync_database():
     inspector = inspect(engine)
     
     # 1. Créer les tables manquantes
-    print("Vérification des tables...")
+    logger.info("Vérification des tables...")
     Base.metadata.create_all(bind=engine)
     
     # 2. Ajouter les colonnes manquantes
-    print("Vérification des colonnes...")
+    logger.info("Vérification des colonnes...")
     with engine.connect() as conn:
         for table_name, table in Base.metadata.tables.items():
             # Récupérer les colonnes déjà présentes dans la base
@@ -19,7 +21,7 @@ def sync_database():
                 
                 for column in table.columns:
                     if column.name not in existing_columns:
-                        print(f"-> Ajout de la colonne '{column.name}' dans la table '{table_name}'")
+                        logger.info(f"-> Ajout de la colonne '{column.name}' dans la table '{table_name}'")
                         
                         # Générer le type SQL
                         # On simplifie pour VARCHAR/INTEGER/BOOLEAN commun

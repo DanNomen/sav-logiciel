@@ -14,7 +14,18 @@ from email_utils import send_overdue_invoice_email, send_payment_confirmation_em
 from database import engine, get_db, SessionLocal
 import models
 from api_meteo import get_weather
+import logging
 
+# Configuration des logs vers un fichier
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("app_prod.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Synchronisation automatique de la structure (Tables + Colonnes)
 from sync_db_prod import sync_database
@@ -548,6 +559,19 @@ def root():
         "database": "PostgreSQL" if "postgresql" in engine.url.drivername else "SQLite",
         "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
+
+# --- DEBUG LOGS ENDPOINT ---
+@app.get("/api/debug/logs")
+def get_debug_logs(lines: int = 100):
+    """Permet de voir les derniers logs directement depuis l'API"""
+    try:
+        if not os.path.exists("app_prod.log"):
+            return {"message": "Aucun log trouvé."}
+        with open("app_prod.log", "r") as f:
+            content = f.readlines()
+            return {"logs": content[-lines:]}
+    except Exception as e:
+        return {"error": str(e)}
 
 # --- UTILISATEURS ---
 @app.post("/api/login")
