@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import uuid
 import datetime
+import requests
 import threading
 import os
 from api_vrm import VictronVRM
