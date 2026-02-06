@@ -1121,15 +1121,31 @@ async def ai_chat(request: dict):
     }
     
     try:
-        # Appel direct via requests pour éviter les problèmes de SDK
-        response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=30)
+        # Liste des modèles à tester par ordre de préférence
+        models_to_try = [
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-pro'
+        ]
         
-        if response.status_code == 200:
-            data = response.json()
-            ai_response = data['candidates'][0]['content']['parts'][0]['text']
-            return {"content": ai_response}
-        else:
-            return {"content": f"Erreur API ({response.status_code}): {response.text}"}
+        last_error = ""
+        for model_name in models_to_try:
+            url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}]
+            }
+            
+            response = await asyncio.to_thread(requests.post, url, headers={'Content-Type': 'application/json'}, json=payload, timeout=20)
+            
+            if response.status_code == 200:
+                data = response.json()
+                ai_response = data['candidates'][0]['content']['parts'][0]['text']
+                return {"content": ai_response}
+            else:
+                last_error = f"Modèle {model_name} a échoué ({response.status_code})"
+                continue # On essaye le suivant
+                
+        return {"content": f"Désolé, aucun modèle IA n'est disponible pour votre clé API. Erreur: {last_error}"}
             
     except Exception as e:
         return {"content": f"Erreur de connexion IA : {str(e)}"}
