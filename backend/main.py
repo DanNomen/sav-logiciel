@@ -49,8 +49,8 @@ def sync_vrm_data():
         if not installations_all:
             return
 
-        # FILTER FOR TESTING: Only "ANKIFY" systems
-        installations = [inst for inst in installations_all if "ANKIFY" in inst.get("name", "").upper()]
+        # No more filter for testing: Take all systems
+        installations = installations_all
 
         # Default client logic removed - we now create clients per system
 

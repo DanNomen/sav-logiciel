@@ -225,8 +225,7 @@ def collect_installations(fetch_details=True, limit=None):
         print("No installations found.")
         return []
 
-    if limit:
-        installations = installations[:limit]
+    # Limit logic removed to fetch all systems
 
     print(f"Processing {len(installations)} installations...")
     
