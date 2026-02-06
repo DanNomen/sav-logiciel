@@ -1092,37 +1092,17 @@ def delete_invoice(invoice_id: str, db: Session = Depends(get_db)):
 # --- AI ASSISTANT ENDPOINT ---
 @app.post("/api/ai/chat")
 async def ai_chat(request: dict):
-    """Assistant IA Expert pour le SAV Solaire via API REST directe"""
-    if not GEMINI_API_KEY:
-        return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter GEMINI_API_KEY dans votre fichier .env"}
-    
+    """Assistant IA Expert pour le SAV Solaire via OpenRouter"""
     user_message = request.get("message")
     user_context = request.get("context", "")
     
-    prompt = f"""
-    Tu es l'Expert SAV de Madagascar Green Power (MGP). 
-    Ton rôle est d'aider les techniciens et administrateurs dans la gestion du SAV solaire.
-    
-    Contexte actuel : {user_context}
-    
-    Question de l'utilisateur : {user_message}
-    
-    Réponds de manière professionnelle, technique mais concise en Français.
-    """
-    
-    # URL de l'API REST Google (V1 stable)
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-    
-    headers = {'Content-Type': 'application/json'}
-    payload = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }]
-    }
-    
     # Utilisation d'OpenRouter (plus fiable pour les restrictions géographiques)
-    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") or GEMINI_API_KEY
+    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
     
+    if not OPENROUTER_API_KEY:
+        # Fallback sur GEMINI_API_KEY si présent
+        OPENROUTER_API_KEY = os.getenv("GEMINI_API_KEY")
+
     if not OPENROUTER_API_KEY:
         return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter OPENROUTER_API_KEY dans votre fichier .env"}
 
@@ -1150,9 +1130,6 @@ async def ai_chat(request: dict):
             return {"content": ai_response}
         else:
             return {"content": f"Erreur OpenRouter ({response.status_code}): {response.text}"}
-            
-    except Exception as e:
-        return {"content": f"Erreur de connexion IA : {str(e)}"}
             
     except Exception as e:
         return {"content": f"Erreur de connexion IA : {str(e)}"}
