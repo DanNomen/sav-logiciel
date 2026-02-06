@@ -13,6 +13,7 @@ from email_utils import send_overdue_invoice_email, send_payment_confirmation_em
 # Imports Base de données corrigés pour le serveur
 from database import engine, get_db, SessionLocal
 import models
+import asyncio
 from api_meteo import get_weather
 import logging
 import google.generativeai as genai
