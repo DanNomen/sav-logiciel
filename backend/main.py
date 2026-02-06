@@ -1113,26 +1113,42 @@ async def ai_chat(request: dict):
         "Content-Type": "application/json"
     }
     
-    payload = {
-        "model": "google/gemini-flash-1.5-8b:free", # Modèle 100% GRATUIT sur OpenRouter
-        "messages": [
-            {"role": "system", "content": "Tu es l'Expert SAV de Madagascar Green Power (MGP), expert technique Victron. Réponds en Français de manière concise."},
-            {"role": "user", "content": f"Contexte: {user_context}\n\nQuestion: {user_message}"}
-        ]
-    }
+    # Liste des modèles gratuits à tester (OpenRouter)
+    models_to_try = [
+        "google/gemini-2.0-flash-exp:free",
+        "google/gemini-flash-1.5-8b:free",
+        "google/gemini-flash-1.5",
+        "meta-llama/llama-3.1-8b-instruct:free"
+    ]
     
-    try:
-        response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=30)
+    last_error = ""
+    for model_name in models_to_try:
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "content": "Tu es l'Expert SAV de Madagascar Green Power (MGP), expert technique Victron. Réponds en Français de manière concise."},
+                {"role": "user", "content": f"Contexte: {user_context}\n\nQuestion: {user_message}"}
+            ]
+        }
         
-        if response.status_code == 200:
-            data = response.json()
-            ai_response = data['choices'][0]['message']['content']
-            return {"content": ai_response}
-        else:
-            return {"content": f"Erreur OpenRouter ({response.status_code}): {response.text}"}
+        try:
+            response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=20)
             
-    except Exception as e:
-        return {"content": f"Erreur de connexion IA : {str(e)}"}
+            if response.status_code == 200:
+                data = response.json()
+                if 'choices' in data and len(data['choices']) > 0:
+                    ai_response = data['choices'][0]['message']['content']
+                    return {"content": ai_response}
+                else:
+                    last_error = f"Réponse vide de {model_name}"
+            else:
+                last_error = f"Erreur {model_name} ({response.status_code}): {response.text}"
+                continue
+        except Exception as e:
+            last_error = str(e)
+            continue
+
+    return {"content": f"Désolé, l'IA est temporairement indisponible. Erreur de connexion : {last_error}"}
 
 # --- CHAT ENDPOINTS ---
 
