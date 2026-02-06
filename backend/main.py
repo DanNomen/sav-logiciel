@@ -1120,32 +1120,39 @@ async def ai_chat(request: dict):
         }]
     }
     
-    try:
-        # Liste des modèles à tester par ordre de préférence
-        models_to_try = [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
-            'gemini-pro'
+    # Utilisation d'OpenRouter (plus fiable pour les restrictions géographiques)
+    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") or GEMINI_API_KEY
+    
+    if not OPENROUTER_API_KEY:
+        return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter OPENROUTER_API_KEY dans votre fichier .env"}
+
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "HTTP-Referer": "http://localhost:8000", # Optionnel
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": "google/gemini-flash-1.5-8b:free", # Modèle 100% GRATUIT sur OpenRouter
+        "messages": [
+            {"role": "system", "content": "Tu es l'Expert SAV de Madagascar Green Power (MGP), expert technique Victron. Réponds en Français de manière concise."},
+            {"role": "user", "content": f"Contexte: {user_context}\n\nQuestion: {user_message}"}
         ]
+    }
+    
+    try:
+        response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=30)
         
-        last_error = ""
-        for model_name in models_to_try:
-            url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
-            payload = {
-                "contents": [{"parts": [{"text": prompt}]}]
-            }
+        if response.status_code == 200:
+            data = response.json()
+            ai_response = data['choices'][0]['message']['content']
+            return {"content": ai_response}
+        else:
+            return {"content": f"Erreur OpenRouter ({response.status_code}): {response.text}"}
             
-            response = await asyncio.to_thread(requests.post, url, headers={'Content-Type': 'application/json'}, json=payload, timeout=20)
-            
-            if response.status_code == 200:
-                data = response.json()
-                ai_response = data['candidates'][0]['content']['parts'][0]['text']
-                return {"content": ai_response}
-            else:
-                last_error = f"Modèle {model_name} a échoué ({response.status_code})"
-                continue # On essaye le suivant
-                
-        return {"content": f"Désolé, aucun modèle IA n'est disponible pour votre clé API. Erreur: {last_error}"}
+    except Exception as e:
+        return {"content": f"Erreur de connexion IA : {str(e)}"}
             
     except Exception as e:
         return {"content": f"Erreur de connexion IA : {str(e)}"}
