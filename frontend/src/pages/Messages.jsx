@@ -12,6 +12,7 @@ function Messages() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [remoteTyping, setRemoteTyping] = useState(false);
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     const messagesEndRef = useRef(null);
     const socketRef = useRef(null);
@@ -97,6 +98,36 @@ function Messages() {
             content: newMessage,
             timestamp: new Date().toISOString()
         };
+
+        if (selectedUser?.id === "AI_EXPERT") {
+            setIsAiLoading(true);
+            const userMsg = { ...msgData, id: Date.now() };
+            setMessages(prev => [...prev, userMsg]);
+            setNewMessage("");
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/ai/chat`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: newMessage, context: "Session technique Expert" })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiMsg = {
+                        sender_id: "AI_EXPERT",
+                        sender_name: "EXPERT IA MGP",
+                        recipient_id: currentUser.id,
+                        content: data.content,
+                        timestamp: new Date().toISOString(),
+                        id: Date.now() + 1
+                    };
+                    setMessages(prev => [...prev, aiMsg]);
+                }
+            } catch (err) { } finally {
+                setIsAiLoading(false);
+            }
+            return;
+        }
 
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(JSON.stringify(msgData));
@@ -185,6 +216,14 @@ function Messages() {
 
                     <div className="list-divider">MESSAGES PRIVÉS</div>
 
+                    <div className={`chat-item ai-contact ${selectedUser?.id === "AI_EXPERT" ? "active" : ""}`} onClick={() => setSelectedUser({ id: "AI_EXPERT", full_name: "EXPERT IA MGP" })}>
+                        <div className="chat-avatar private ai"><FaUserCircle size={32} color="#10b981" /></div>
+                        <div className="chat-info">
+                            <div className="chat-header-row"><span className="chat-name">🤖 EXPERT IA MGP</span></div>
+                            <p className="chat-last-msg">Assistant technique intelligent</p>
+                        </div>
+                    </div>
+
                     {filteredUsers.map(user => {
                         const lastMsg = getLastMessage(user.id);
                         const unread = getUnreadCount(user.id);
@@ -247,9 +286,12 @@ function Messages() {
                             </div>
                         ))
                     )}
-                    {remoteTyping && (
+                    {isAiLoading && (
                         <div className="msg-row msg-other">
-                            <div className="msg-bubble typing-bubble">...</div>
+                            <div className="msg-bubble">
+                                <span className="msg-sender">EXPERT IA MGP</span>
+                                <div className="msg-content">Réflexion en cours...</div>
+                            </div>
                         </div>
                     )}
                     <div ref={messagesEndRef} />
