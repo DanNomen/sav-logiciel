@@ -11,7 +11,6 @@ function ChatWidget() {
     const [newMessage, setNewMessage] = useState('');
     const [recipientId, setRecipientId] = useState(''); // Empty means public
     const [users, setUsers] = useState([]);
-    const [isAiLoading, setIsAiLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
     const messagesEndRef = useRef(null);
     const socketRef = useRef(null);
@@ -88,38 +87,6 @@ function ChatWidget() {
             timestamp: new Date().toISOString()
         };
 
-        if (recipientId === 'AI_EXPERT') {
-            setIsAiLoading(true);
-            // On ajoute le message de l'utilisateur localement immédiatement
-            const userMsg = { ...msgData, id: Date.now() };
-            setMessages(prev => [...prev, userMsg]);
-            setNewMessage('');
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/ai/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: newMessage, context: "Session de support SAV" })
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    const aiMsg = {
-                        sender_id: 'AI_EXPERT',
-                        sender_name: 'EXPERT IA MGP',
-                        recipient_id: currentUser.id,
-                        content: data.content,
-                        timestamp: new Date().toISOString()
-                    };
-                    setMessages(prev => [...prev, aiMsg]);
-                }
-            } catch (error) {
-                console.error("AI Error:", error);
-            } finally {
-                setIsAiLoading(false);
-            }
-            return;
-        }
-
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(JSON.stringify(msgData));
         }
@@ -173,7 +140,6 @@ function ChatWidget() {
                                     className="recipient-select"
                                 >
                                     <option value="">Tous (Public)</option>
-                                    <option value="AI_EXPERT">🤖 EXPERT IA MGP (Privé)</option>
                                     {users.map(u => (
                                         <option key={u.id} value={u.id}>Privé: {u.full_name}</option>
                                     ))}
@@ -202,16 +168,6 @@ function ChatWidget() {
                                         </span>
                                     </div>
                                 ))}
-                                {isAiLoading && (
-                                    <div className="message-bubble private">
-                                        <div className="message-header-row">
-                                            <span className="message-sender">EXPERT IA MGP</span>
-                                        </div>
-                                        <div className="message-content ai-typing">
-                                            En train de réfléchir...
-                                        </div>
-                                    </div>
-                                )}
                                 <div ref={messagesEndRef} />
                             </div>
 

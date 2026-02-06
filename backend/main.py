@@ -17,13 +17,6 @@ import models
 import asyncio
 from api_meteo import get_weather
 import logging
-import google.generativeai as genai
-
-# Configuration Gemini
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
 # Configuration des logs vers un fichier
 logging.basicConfig(
     level=logging.INFO,
@@ -1088,67 +1081,6 @@ def delete_invoice(invoice_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
-
-# --- AI ASSISTANT ENDPOINT ---
-@app.post("/api/ai/chat")
-async def ai_chat(request: dict):
-    """Assistant IA Expert pour le SAV Solaire via OpenRouter"""
-    user_message = request.get("message")
-    user_context = request.get("context", "")
-    
-    # Utilisation d'OpenRouter (plus fiable pour les restrictions géographiques)
-    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-    
-    if not OPENROUTER_API_KEY:
-        # Fallback sur GEMINI_API_KEY si présent
-        OPENROUTER_API_KEY = os.getenv("GEMINI_API_KEY")
-
-    if not OPENROUTER_API_KEY:
-        return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter OPENROUTER_API_KEY dans votre fichier .env"}
-
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "HTTP-Referer": "http://localhost:8000", # Optionnel
-        "Content-Type": "application/json"
-    }
-    
-    # Liste des modèles gratuits à tester (OpenRouter)
-    models_to_try = [
-        "google/gemini-2.0-flash-exp:free",
-        "google/gemini-flash-1.5-8b:free",
-        "google/gemini-flash-1.5",
-        "meta-llama/llama-3.1-8b-instruct:free"
-    ]
-    
-    last_error = ""
-    for model_name in models_to_try:
-        payload = {
-            "model": model_name,
-            "messages": [
-                {"role": "system", "content": "Tu es l'Expert SAV de Madagascar Green Power (MGP), expert technique Victron. Réponds en Français de manière concise."},
-                {"role": "user", "content": f"Contexte: {user_context}\n\nQuestion: {user_message}"}
-            ]
-        }
-        
-        try:
-            response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=20)
-            
-            if response.status_code == 200:
-                data = response.json()
-                if 'choices' in data and len(data['choices']) > 0:
-                    ai_response = data['choices'][0]['message']['content']
-                    return {"content": ai_response}
-                else:
-                    last_error = f"Réponse vide de {model_name}"
-            else:
-                last_error = f"Erreur {model_name} ({response.status_code}): {response.text}"
-                continue
-        except Exception as e:
-            last_error = str(e)
-            continue
-
-    return {"content": f"Désolé, l'IA est temporairement indisponible. Erreur de connexion : {last_error}"}
 
 # --- CHAT ENDPOINTS ---
 
