@@ -15,6 +15,12 @@ from database import engine, get_db, SessionLocal
 import models
 from api_meteo import get_weather
 import logging
+import google.generativeai as genai
+
+# Configuration Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 # Configuration des logs vers un fichier
 logging.basicConfig(
@@ -1080,6 +1086,35 @@ def delete_invoice(invoice_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+# --- AI ASSISTANT ENDPOINT ---
+@app.post("/api/ai/chat")
+async def ai_chat(request: dict):
+    """Assistant IA Expert pour le SAV Solaire"""
+    if not GEMINI_API_KEY:
+        return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter GEMINI_API_KEY dans votre fichier .env"}
+    
+    user_message = request.get("message")
+    user_context = request.get("context", "") # Ex: infos sur un système ou client
+    
+    prompt = f"""
+    Tu es l'Expert SAV de Madagascar Green Power (MGP). 
+    Ton rôle est d'aider les techniciens et administrateurs dans la gestion du SAV solaire.
+    
+    Contexte actuel (système/client) : {user_context}
+    
+    Question de l'utilisateur : {user_message}
+    
+    Réponds de manière professionnelle, technique mais concise. Si tu parles de matériel Victron, sois précis. 
+    Parle toujours en Français.
+    """
+    
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = await asyncio.to_thread(model.generate_content, prompt)
+        return {"content": response.text}
+    except Exception as e:
+        return {"content": f"Erreur avec l'IA : {str(e)}"}
 
 # --- CHAT ENDPOINTS ---
 
