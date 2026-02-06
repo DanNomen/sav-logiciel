@@ -1091,32 +1091,47 @@ def delete_invoice(invoice_id: str, db: Session = Depends(get_db)):
 # --- AI ASSISTANT ENDPOINT ---
 @app.post("/api/ai/chat")
 async def ai_chat(request: dict):
-    """Assistant IA Expert pour le SAV Solaire"""
+    """Assistant IA Expert pour le SAV Solaire via API REST directe"""
     if not GEMINI_API_KEY:
         return {"content": "Désolé, l'IA n'est pas configurée. Veuillez ajouter GEMINI_API_KEY dans votre fichier .env"}
     
     user_message = request.get("message")
-    user_context = request.get("context", "") # Ex: infos sur un système ou client
+    user_context = request.get("context", "")
     
     prompt = f"""
     Tu es l'Expert SAV de Madagascar Green Power (MGP). 
     Ton rôle est d'aider les techniciens et administrateurs dans la gestion du SAV solaire.
     
-    Contexte actuel (système/client) : {user_context}
+    Contexte actuel : {user_context}
     
     Question de l'utilisateur : {user_message}
     
-    Réponds de manière professionnelle, technique mais concise. Si tu parles de matériel Victron, sois précis. 
-    Parle toujours en Français.
+    Réponds de manière professionnelle, technique mais concise en Français.
     """
     
+    # URL de l'API REST Google (V1 stable)
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }]
+    }
+    
     try:
-        # Forcer l'utilisation de gemini-1.5-flash qui est le plus robuste avec les nouveaux SDK
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = await asyncio.to_thread(model.generate_content, prompt)
-        return {"content": response.text}
+        # Appel direct via requests pour éviter les problèmes de SDK
+        response = await asyncio.to_thread(requests.post, url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            data = response.json()
+            ai_response = data['candidates'][0]['content']['parts'][0]['text']
+            return {"content": ai_response}
+        else:
+            return {"content": f"Erreur API ({response.status_code}): {response.text}"}
+            
     except Exception as e:
-        return {"content": f"Erreur avec l'IA : {str(e)}"}
+        return {"content": f"Erreur de connexion IA : {str(e)}"}
 
 # --- CHAT ENDPOINTS ---
 
