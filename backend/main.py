@@ -16,8 +16,9 @@ import models
 from api_meteo import get_weather
 
 
-# Création automatique des tables
-models.Base.metadata.create_all(bind=engine)
+# Synchronisation automatique de la structure (Tables + Colonnes)
+from sync_db_prod import sync_database
+sync_database()
 
 # --- VRM SYNC LOGIC ---
 IS_SYNCING = False
